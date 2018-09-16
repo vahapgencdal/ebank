@@ -40,6 +40,6 @@ public class AppSetup extends GuiceServletContextListener {
 
                 filter("/api/*").through(AppFilter.class);
             }
-        }, new AppBind());
+        }, new AppBinder());
     }
 }

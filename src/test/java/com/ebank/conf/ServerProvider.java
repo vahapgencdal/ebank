@@ -1,9 +1,9 @@
 package com.ebank.conf;
 
-import com.ebank.model.repository.UserRepository;
-import com.ebank.model.repository.impl.UserRepositoryImpl;
-import com.ebank.model.service.UserService;
-import com.ebank.model.service.impl.UserServiceImpl;
+import com.ebank.model.repository.*;
+import com.ebank.model.repository.impl.*;
+import com.ebank.model.service.*;
+import com.ebank.model.service.impl.*;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Scopes;
@@ -43,7 +43,31 @@ public class ServerProvider {
             protected void configureServlets() {
                 bind(UserService.class).to(UserServiceImpl.class);
                 bind(UserRepository.class).to(UserRepositoryImpl.class);
-                // hook Jackson into Jersey as the POJO <-> JSON mapper
+
+                bind(AccountRepository.class).to(AccountRepositoryImpl.class);
+                bind(AccountService.class).to(AccountServiceImpl.class);
+
+                bind(AccountTypeRepository.class).to(AccountTypeRepositoryImpl.class);
+                bind(AccountTypeService.class).to(AccountTypeServiceImpl.class);
+
+                bind(AddressRepository.class).to(AddressRepositoryImpl.class);
+                bind(AddressService.class).to(AddressServiceImpl.class);
+
+                bind(BankRepository.class).to(BankRepositoryImpl.class);
+                bind(BankService.class).to(BankServiceImpl.class);
+
+                bind(CounterPartyRepository.class).to(CounterPartyRepositoryImpl.class);
+                bind(CounterPartyService.class).to(CounterPartyServiceImpl.class);
+
+                bind(CurrencyRepository.class).to(CurrencyRepositoryImpl.class);
+                bind(CurrencyService.class).to(CurrencyServiceImpl.class);
+
+                bind(TransactionRepository.class).to(TransactionRepositoryImpl.class);
+                bind(TransactionService.class).to(TransactionServiceImpl.class);
+
+                bind(TransactionTypeRepository.class).to(TransactionTypeRepositoryImpl.class);
+                bind(TransactionTypeService.class).to(TransactionTypeServiceImpl.class);
+
                 bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
             }
         });

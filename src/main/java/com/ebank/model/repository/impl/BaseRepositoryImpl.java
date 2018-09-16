@@ -14,11 +14,31 @@ public abstract class BaseRepositoryImpl<T> implements BaseRepository<T> {
 
     @Override
     public List<T> getAll() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
-    public T getById(int id) {
-        return (T) null;  //To change body of implemented methods use File | Settings | File Templates.
+    public T getById(long id) {
+        return null;
+    }
+
+    @Override
+    public T create(T t) {
+        return null;
+    }
+
+    @Override
+    public T update(T t) {
+        return null;
+    }
+
+    @Override
+    public void remove(long id) {
+
+    }
+
+    @Override
+    public int getSize() {
+        return 0;
     }
 }

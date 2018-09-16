@@ -1,7 +1,7 @@
 package com.ebank.api;
 
-import com.ebank.model.entity.User;
-import com.ebank.model.service.UserService;
+import com.ebank.model.entity.Account;
+import com.ebank.model.service.AccountService;
 import com.google.inject.Inject;
 
 import javax.ws.rs.*;
@@ -14,55 +14,55 @@ import java.util.List;
  * @date 16.09.2018
  * @description TODO: Class Description
  */
-@Path("/users")
-public class UserApi {
+@Path("/accounts")
+public class AccountApi {
 
-    private final UserService userService;
+    private final AccountService accountService;
 
     @Inject
-    public UserApi(UserService userService) {
-        this.userService = userService;
+    public AccountApi(AccountService accountService) {
+        this.accountService = accountService;
     }
 
     @GET
     @Path("size")
     @Produces(MediaType.APPLICATION_JSON)
     public int getSize() {
-        return userService.getSize();
+        return accountService.getSize();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getAll() {
-        return userService.getAll();
+    public List<Account> getAll() {
+        return accountService.getAll();
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getById(@PathParam("id") long id) {
-        return userService.getById(id);
+    public Account getById(@PathParam("id") long id) {
+        return accountService.getById(id);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public User create(User user) {
-        return userService.create(user);
+    public Account create(Account account) {
+        return accountService.create(account);
     }
 
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public User update(User user) {
-        return userService.update(user);
+    public Account update(Account account) {
+        return accountService.update(account);
     }
 
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void remove(@PathParam("id") long id) {
-        userService.remove(id);
+        accountService.remove(id);
     }
 }

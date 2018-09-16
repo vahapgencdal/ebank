@@ -1,7 +1,7 @@
 package com.ebank.api;
 
-import com.ebank.model.entity.User;
-import com.ebank.model.service.UserService;
+import com.ebank.model.entity.CounterParty;
+import com.ebank.model.service.CounterPartyService;
 import com.google.inject.Inject;
 
 import javax.ws.rs.*;
@@ -14,55 +14,55 @@ import java.util.List;
  * @date 16.09.2018
  * @description TODO: Class Description
  */
-@Path("/users")
-public class UserApi {
+@Path("/counterParties")
+public class CounterPartyApi {
 
-    private final UserService userService;
+    private final CounterPartyService counterPartyService;
 
     @Inject
-    public UserApi(UserService userService) {
-        this.userService = userService;
+    public CounterPartyApi(CounterPartyService counterPartyService) {
+        this.counterPartyService = counterPartyService;
     }
 
     @GET
     @Path("size")
     @Produces(MediaType.APPLICATION_JSON)
     public int getSize() {
-        return userService.getSize();
+        return counterPartyService.getSize();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getAll() {
-        return userService.getAll();
+    public List<CounterParty> getAll() {
+        return counterPartyService.getAll();
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getById(@PathParam("id") long id) {
-        return userService.getById(id);
+    public CounterParty getById(@PathParam("id") long id) {
+        return counterPartyService.getById(id);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public User create(User user) {
-        return userService.create(user);
+    public CounterParty create(CounterParty counterParty) {
+        return counterPartyService.create(counterParty);
     }
 
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public User update(User user) {
-        return userService.update(user);
+    public CounterParty update(CounterParty counterParty) {
+        return counterPartyService.update(counterParty);
     }
 
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void remove(@PathParam("id") long id) {
-        userService.remove(id);
+        counterPartyService.remove(id);
     }
 }

@@ -1,10 +1,9 @@
 package com.ebank.model.repository.impl;
 
-import com.google.common.collect.Ordering;
-import com.google.common.primitives.Ints;
-import com.google.inject.Singleton;
 import com.ebank.model.entity.User;
 import com.ebank.model.repository.UserRepository;
+import com.google.common.collect.Ordering;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,19 +17,15 @@ import java.util.List;
 @Singleton
 public class UserRepositoryImpl extends BaseRepositoryImpl<User> implements UserRepository {
 
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
 
     public UserRepositoryImpl() {
+        this.users = new ArrayList<>();
         this.users = this.createUsers();
     }
 
-    public User getById(int id) {
-        for (User u : this.users) {
-            if (u.getId() == id) {
-                return u;
-            }
-        }
-        return new User();
+    public User getById(long id) {
+        return this.users.parallelStream().filter(user -> user.getId() == id).findAny().orElse(new User());
     }
 
     public List<User> getAll() {
@@ -53,13 +48,13 @@ public class UserRepositoryImpl extends BaseRepositoryImpl<User> implements User
     }
 
     @Override
-    public void remove(int id) {
+    public void remove(long id) {
         User byId = this.getById(id);
         this.users.remove(byId);
     }
 
     @Override
-    public int getNumberOfUsers() {
+    public int getSize() {
         return this.users.size();
     }
 
@@ -75,11 +70,12 @@ public class UserRepositoryImpl extends BaseRepositoryImpl<User> implements User
         return this.users;
     }
 
-    private int getCurrentMaxId() {
+
+    private long getCurrentMaxId() {
         Ordering<User> ordering = new Ordering<User>() {
             @Override
             public int compare(User left, User right) {
-                return Ints.compare(left.getId(), right.getId());
+                return Long.compare(left.getId(), right.getId());
             }
         };
         return ordering.max(this.users).getId();

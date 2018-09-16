@@ -1,10 +1,10 @@
 package com.ebank.model.service.impl;
 
+import com.ebank.model.entity.User;
 import com.ebank.model.repository.UserRepository;
+import com.ebank.model.service.UserService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.ebank.model.entity.User;
-import com.ebank.model.service.UserService;
 
 import java.util.List;
 
@@ -25,19 +25,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List getAllUsers() {
+    public List<User> getAll() {
         return this.userRepository.getAll();
     }
 
     @Override
-    public User getById(int id) {
+    public User getById(long id) {
         return this.userRepository.getById(id);
     }
 
     @Override
-    public User createNewUser(User user) {
-        User u = this.userRepository.create(user);
-        return u;
+    public User create(User user) {
+        return this.userRepository.create(user);
     }
 
     @Override
@@ -46,12 +45,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void remove(int id) {
+    public void remove(long id) {
         this.userRepository.remove(id);
     }
 
     @Override
-    public int getNumberOfUsers() {
-        return this.userRepository.getNumberOfUsers();
+    public int getSize() {
+        return this.userRepository.getSize();
     }
 }

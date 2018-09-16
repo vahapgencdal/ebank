@@ -5,25 +5,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.LocalDateTime;
 
 /**
  * @author Vahap Gencdal
  * @email avahap19@gmail.com
  * @date 16.09.2018
- * @description :Allow Cor Requests
+ * @description TODO: Class Description
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class User {
-
+public class Bank {
     private long id;
-    private String firstName;
-    private String lastName;
-    private String phone;
-    private String email;
-    private String profile;
-    private String addressId;
+    private String name;
+    private String bic;
+    private long addressId;
 
+    private boolean status;//ACTIVE OR PASSIVE
+    private LocalDateTime cDate;
+    private LocalDateTime uDate;
 }
