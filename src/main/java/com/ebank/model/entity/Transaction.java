@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -20,15 +19,17 @@ import java.time.LocalDateTime;
 @XmlRootElement
 public class Transaction {
     private long id;
-    private String transactionType;
+    private long transactionType;
     private String senderAccountNo;
     private String senderIban;
     private String senderFullName;
+    private String senderBic;
     private String receiverAccountNo;
     private String receiverIban;
     private String receiverFullName;
-    private BigDecimal amount;
-    private BigDecimal fee;//
+    private String receiverBic;
+    private double amount;
+    private double fee;
     private String status;//PROCESSING,REJECTED,COMPLETED
 
     private LocalDateTime cDate;

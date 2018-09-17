@@ -9,5 +9,5 @@ import com.ebank.model.entity.Bank;
  * @description :Allow Cor Requests
  */
 public interface BankRepository extends BaseRepository<Bank> {
-
+    Bank getByBicCode(String bicCode);
 }

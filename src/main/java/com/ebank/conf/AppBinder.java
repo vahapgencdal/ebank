@@ -19,8 +19,11 @@ public class AppBinder extends AbstractModule {
         bind(UserRepository.class).to(UserRepositoryImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
 
-        bind(AccountRepository.class).to(AccountRepositoryImpl.class);
-        bind(AccountService.class).to(AccountServiceImpl.class);
+        bind(BankAccountRepository.class).to(BankAccountRepositoryImpl.class);
+        bind(BankAccountService.class).to(BankAccountServiceImpl.class);
+
+        bind(UserAccountRepository.class).to(UserAccountRepositoryImpl.class);
+        bind(UserAccountService.class).to(UserAccountServiceImpl.class);
 
         bind(AccountTypeRepository.class).to(AccountTypeRepositoryImpl.class);
         bind(AccountTypeService.class).to(AccountTypeServiceImpl.class);
@@ -40,8 +43,8 @@ public class AppBinder extends AbstractModule {
         bind(TransactionRepository.class).to(TransactionRepositoryImpl.class);
         bind(TransactionService.class).to(TransactionServiceImpl.class);
 
-        bind(TransactionTypeRepository.class).to(TransactionTypeRepositoryImpl.class);
-        bind(TransactionTypeService.class).to(TransactionTypeServiceImpl.class);
+        bind(TransferRepository.class).to(TransferRepositoryImpl.class);
+        bind(TransferService.class).to(TransferServiceImpl.class);
 
     }
 }

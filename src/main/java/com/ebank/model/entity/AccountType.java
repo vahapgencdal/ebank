@@ -23,7 +23,9 @@ public class AccountType {
     private String name;
     private String descr;
 
-    private boolean status;//ACTIVE OR PASSIVE
+    private boolean status;
     private LocalDateTime cDate;
     private LocalDateTime uDate;
+    private long cUser;
+    private long uUser;
 }

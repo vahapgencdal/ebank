@@ -20,9 +20,12 @@ import java.time.LocalDateTime;
 public class Currency {
     private long id;
     private String name;
+    private String shrtCode;
     private String descr;
 
     private boolean status;//ACTIVE OR PASSIVE
     private LocalDateTime cDate;
     private LocalDateTime uDate;
+    private long uUser;
+    private long cUser;
 }

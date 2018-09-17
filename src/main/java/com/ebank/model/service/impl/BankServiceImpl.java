@@ -53,4 +53,9 @@ public class BankServiceImpl implements BankService {
     public int getSize() {
         return this.bankRepository.getSize();
     }
+
+    @Override
+    public Bank getByBicCode(String bicCode) {
+        return null;
+    }
 }

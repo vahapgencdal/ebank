@@ -27,9 +27,11 @@ public class CounterParty {
     private String email;
     private String country;
     private String profile;//CORPORATE OR PERSONAL
-    private String currency;
+    private long currency;
     private boolean status;//ACTIVE OR PASSIVE
     private LocalDateTime cDate;
     private LocalDateTime uDate;
+    private long cUser;
+    private long uUser;
 
 }

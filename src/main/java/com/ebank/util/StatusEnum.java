@@ -6,5 +6,6 @@ package com.ebank.util;
  * @date 16.09.2018
  * @description TODO: Class Description
  */
-public class StatusEnum {
+public enum StatusEnum {
+    PENDING, ACTIVE, INACTIVE, DELETED
 }

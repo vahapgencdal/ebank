@@ -1,11 +1,11 @@
 package com.ebank.model.repository.impl;
 
+import com.ebank.datasource.DataSource;
 import com.ebank.model.entity.AccountType;
 import com.ebank.model.repository.AccountTypeRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,45 +17,41 @@ import java.util.List;
 @Singleton
 public class AccountTypeRepositoryImpl extends BaseRepositoryImpl<AccountType> implements AccountTypeRepository {
 
-    private List<AccountType> accountTypes;
-
-    public AccountTypeRepositoryImpl() {
-        this.accountTypes = new ArrayList<>();
-        this.accountTypes = this.createAccountTypes();
-    }
-
     public AccountType getById(long id) {
-        return this.accountTypes.parallelStream().filter(accountType -> accountType.getId() == id).findAny().orElse(new AccountType());
+        return DataSource.accountTypes.parallelStream().filter(accountType -> accountType.getId() == id).findAny().orElse(new AccountType());
     }
 
     public List<AccountType> getAll() {
-        return this.accountTypes;
+        return DataSource.accountTypes;
     }
 
     @Override
     public AccountType create(AccountType accountType) {
         accountType.setId(getCurrentMaxId() + 1);
-        this.accountTypes.add(accountType);
+        DataSource.accountTypes.add(accountType);
         return accountType;
     }
 
     @Override
     public AccountType update(AccountType accountType) {
-        AccountType byId = this.getById(accountType.getId());
-        byId.setName(accountType.getName());
-        byId.setDescr(accountType.getDescr());
-        return byId;
+        AccountType acc = this.getById(accountType.getId());
+        acc.setName(accountType.getName());
+        acc.setDescr(accountType.getDescr());
+        acc.setStatus(accountType.isStatus());
+        acc.setUUser(accountType.getUUser());
+        acc.setUDate(accountType.getUDate());
+        return acc;
     }
 
     @Override
     public void remove(long id) {
         AccountType byId = this.getById(id);
-        this.accountTypes.remove(byId);
+        DataSource.accountTypes.remove(byId);
     }
 
     @Override
     public int getSize() {
-        return this.accountTypes.size();
+        return DataSource.accountTypes.size();
     }
 
     private List<AccountType> createAccountTypes() {
@@ -65,19 +61,20 @@ public class AccountTypeRepositoryImpl extends BaseRepositoryImpl<AccountType> i
             accountType.setId(i + 1);
             accountType.setName("Account" + (i + 1));
             accountType.setDescr("Account" + (i + 1));
-            this.accountTypes.add(accountType);
+            DataSource.accountTypes.add(accountType);
         }
-        return this.accountTypes;
+        return DataSource.accountTypes;
     }
 
 
     private long getCurrentMaxId() {
+        if (DataSource.accountTypes.isEmpty()) return 0;
         Ordering<AccountType> ordering = new Ordering<AccountType>() {
             @Override
             public int compare(AccountType left, AccountType right) {
                 return Long.compare(left.getId(), right.getId());
             }
         };
-        return ordering.max(this.accountTypes).getId();
+        return ordering.max(DataSource.accountTypes).getId();
     }
 }

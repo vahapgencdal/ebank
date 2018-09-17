@@ -1,7 +1,10 @@
 package com.ebank;
 
+import com.ebank.mock.UserMockCreater;
 import com.ebank.model.entity.User;
 import com.sun.jersey.api.client.ClientResponse;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,145 +22,70 @@ public class UserApiTest extends BaseApiTest {
         super();
     }
 
+    public ClientResponse insert(User user) throws Exception {
+        String content = json(user);
+        ClientResponse resp = webService.path("api").path("users").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
+        return resp;
+    }
+
     @Test
-    public void testGetAllUsersShouldReturnSuccessStatus() {
-        ClientResponse resp = webService.path("api").path("users")
+    public void create() throws Exception {
+
+        ClientResponse response = insert(UserMockCreater.getTest());
+
+        JSONObject js = new JSONObject(response.getEntity(String.class));
+
+        Assert.assertNotNull(js);
+    }
+
+    @Test
+    public void get() throws Exception {
+        ClientResponse response = insert(UserMockCreater.getTest());
+
+        JSONObject js = new JSONObject(response.getEntity(String.class));
+
+        ClientResponse respGet = webService.path("api").path("users/" + js.getLong("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .get(ClientResponse.class);
-        System.out.println("Got Response: " + resp);
+        JSONObject getById = new JSONObject(respGet.getEntity(String.class));
 
-        Assert.assertEquals(200, resp.getStatus());
+        Assert.assertNotNull(getById);
     }
 
     @Test
-    public void testGetAllUsersShouldReturnJSArray() {
-        ClientResponse resp = webService.path("api").path("users")
-                .accept(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
-        System.out.println("Got Response: " + resp);
-        String actual = resp.getEntity(String.class);
+    public void update() throws Exception {
+        ClientResponse response = insert(UserMockCreater.getTest());
 
-        Assert.assertTrue("Result must be a Json array: But it starts with '{'!", !actual.startsWith("{"));
-        Assert.assertTrue("Result must be a Json array: But it does not start with '['!", actual.startsWith("["));
+        JSONObject js = new JSONObject(response.getEntity(String.class));
+
+        ClientResponse resp = webService.path("api").path("users/" + js.getLong("id"))
+                .type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js.put("status", false));
+
+        JSONObject jsUpdate = new JSONObject(resp.getEntity(String.class));
+
+        Assert.assertEquals(false, jsUpdate.getBoolean("status"));
     }
 
     @Test
-    public void testGetAllUsersShouldReturnUsers() {
-        ClientResponse resp = webService.path("api").path("users")
-                .accept(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
-        System.out.println("Got Response: " + resp);
-        String actual = resp.getEntity(String.class);
+    public void remove() throws Exception {
+        ClientResponse response = insert(UserMockCreater.getTest());
 
-        String expectedUser1 = "\"id\":1";
-        String expectedUser10 = "\"id\":10";
+        JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        Assert.assertTrue(actual.contains(expectedUser1));
-        Assert.assertTrue(actual.contains(expectedUser10));
-    }
-
-    @Test
-    public void testGetUserByIdShouldReturnSuccessStatus() {
-        ClientResponse resp = webService.path("api").path("users/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
-        System.out.println("Got Response: " + resp);
-
-        Assert.assertEquals(200, resp.getStatus());
-    }
-
-    @Test
-    public void testGetUserByIdOneShouldReturnFirstUser() {
-        ClientResponse resp = webService.path("api").path("users/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
-        System.out.println("Got Response: " + resp);
-        String actual = resp.getEntity(String.class);
-        String expectedUser1 = "\"id\":1";
-
-        Assert.assertTrue(actual.contains(expectedUser1));
-    }
-
-    @Test
-    public void testCreateUserShouldReturnNewUserWithCorrectId() {
-        ClientResponse resp = webService.path("api").path("users")
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .accept(MediaType.APPLICATION_JSON)
-                .post(ClientResponse.class, new User());
-
-        System.out.println("Got Response: " + resp);
-        String actual = resp.getEntity(String.class);
-        String expectedId = "\"id\":11";
-
-        Assert.assertTrue(actual.contains(expectedId));
-    }
-
-    @Test
-    public void testUpdateUserShouldReturnUpdatedUser() {
-
-        User updateUser = new User();
-        updateUser.setId(1);
-        updateUser.setFirstName("XX");
-        updateUser.setLastName("YY");
-
-        ClientResponse resp = webService.path("api").path("users/1")
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .accept(MediaType.APPLICATION_JSON)
-                .put(ClientResponse.class, updateUser);
-
-        String actual = resp.getEntity(String.class);
-        String expectedId = "\"id\":1";
-        String expectedFirstName = "\"firstName\":\"XX\"";
-        String expectedLastName = "\"lastName\":\"YY\"";
-
-        Assert.assertTrue(actual.contains(expectedId));
-        Assert.assertTrue(actual.contains(expectedFirstName));
-        Assert.assertTrue(actual.contains(expectedLastName));
-    }
-
-    @Test
-    public void testGetNumberOfUserShouldReturnSuccessStatusAndCorrectNumber() {
-
-        String actual = getNumberOfUsers();
-
-        String expectedNumberOfUsers = "10";
-        Assert.assertEquals(expectedNumberOfUsers, actual);
-    }
-
-    private String getNumberOfUsers() {
-        ClientResponse resp = webService.path("api").path("users/size")
-                .accept(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
-
-        System.out.println("Got Response: " + resp);
-        Assert.assertEquals(200, resp.getStatus());
-        return resp.getEntity(String.class);
-    }
-
-    @Test
-    public void testRemoveUserShouldReturnSuccessStatus() {
-
-        ClientResponse resp = webService.path("api").path("users/1")
+        ClientResponse resp = webService.path("api").path("users/" + js.getLong("id"))
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .accept(MediaType.APPLICATION_JSON)
                 .delete(ClientResponse.class);
-
-        System.out.println("Got Response: " + resp);
         Assert.assertEquals(204, resp.getStatus());
     }
 
+
     @Test
-    public void testRemoveUserShouldDecreaseNumberOfUsersByOne() {
-
-        int numberOfUsersBefore = Integer.parseInt(getNumberOfUsers());
-
-        webService.path("api").path("users/1")
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .accept(MediaType.APPLICATION_JSON)
-                .delete(ClientResponse.class);
-
-        int numberOfUsersAfter = Integer.parseInt(getNumberOfUsers());
-
-        Assert.assertEquals(numberOfUsersAfter, numberOfUsersBefore - 1);
+    public void getAll() throws Exception {
+        insert(UserMockCreater.getTest());
+        ClientResponse resp = webService.path("api").path("users").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        String actual = resp.getEntity(String.class);
+        JSONArray jsonArray = new JSONArray(actual);
+        Assert.assertTrue(jsonArray.length() > 0);
     }
 }

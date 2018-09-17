@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -21,17 +20,19 @@ import java.time.LocalDateTime;
 public class Account {
 
     private long id;
-    private String userId;
-    private String accountType;
+    private long accountType;//DEPOSIT DRAW
     private String name;
     private String accountNo;
     private String iban;
-    private BigDecimal balance;
-    private String currency;
+    private double amount;
+    private long currencyId;
     private boolean isPublic;
+    private boolean isDefault;
 
-    private boolean status;//ACTIVE OR PASSIVE
+    private boolean status;
     private LocalDateTime cDate;
     private LocalDateTime uDate;
+    private long cUser;
+    private long uUser;
 
 }

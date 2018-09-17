@@ -1,11 +1,11 @@
 package com.ebank.model.repository.impl;
 
+import com.ebank.datasource.DataSource;
 import com.ebank.model.entity.Currency;
 import com.ebank.model.repository.CurrencyRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,42 +17,40 @@ import java.util.List;
 @Singleton
 public class CurrencyRepositoryImpl extends BaseRepositoryImpl<Currency> implements CurrencyRepository {
 
-    private List<Currency> currencies;
-
-    public CurrencyRepositoryImpl() {
-        this.currencies = new ArrayList<>();
-        this.currencies = this.createCurrencies();
-    }
-
     public Currency getById(long id) {
-        return this.currencies.parallelStream().filter(currency -> currency.getId() == id).findAny().orElse(new Currency());
+        return DataSource.currencies.parallelStream().filter(currency -> currency.getId() == id).findAny().orElse(new Currency());
     }
 
     public List<Currency> getAll() {
-        return this.currencies;
+        return DataSource.currencies;
     }
 
     @Override
     public Currency create(Currency currency) {
         currency.setId(getCurrentMaxId() + 1);
-        this.currencies.add(currency);
+        DataSource.currencies.add(currency);
         return currency;
     }
 
     @Override
     public Currency update(Currency currency) {
-        return this.getById(currency.getId());
+        Currency byId = this.getById(currency.getId());
+        byId.setShrtCode(currency.getShrtCode());
+        byId.setName(currency.getName());
+        byId.setDescr(currency.getDescr());
+        byId.setStatus(currency.isStatus());
+        return byId;
     }
 
     @Override
     public void remove(long id) {
         Currency byId = this.getById(id);
-        this.currencies.remove(byId);
+        DataSource.currencies.remove(byId);
     }
 
     @Override
     public int getSize() {
-        return this.currencies.size();
+        return DataSource.currencies.size();
     }
 
     private List<Currency> createCurrencies() {
@@ -60,19 +58,20 @@ public class CurrencyRepositoryImpl extends BaseRepositoryImpl<Currency> impleme
         for (int i = 0; i < numberOfCurrencys; i++) {
             Currency currency = new Currency();
             currency.setId(i + 1);
-            this.currencies.add(currency);
+            DataSource.currencies.add(currency);
         }
-        return this.currencies;
+        return DataSource.currencies;
     }
 
 
     private long getCurrentMaxId() {
+        if (DataSource.currencies.isEmpty()) return 0;
         Ordering<Currency> ordering = new Ordering<Currency>() {
             @Override
             public int compare(Currency left, Currency right) {
                 return Long.compare(left.getId(), right.getId());
             }
         };
-        return ordering.max(this.currencies).getId();
+        return ordering.max(DataSource.currencies).getId();
     }
 }

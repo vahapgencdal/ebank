@@ -1,4 +1,4 @@
-package com.ebank.model.entity;
+package com.ebank.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class TransactionType {
+public class InternalTransferWithIbanRequest {
     private long id;
     private String name;
     private String shrtCode;

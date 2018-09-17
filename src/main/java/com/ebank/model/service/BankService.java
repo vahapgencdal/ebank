@@ -10,4 +10,6 @@ import com.ebank.model.entity.Bank;
  */
 public interface BankService extends BaseService<Bank> {
 
+    Bank getByBicCode(String bicCode);
+
 }

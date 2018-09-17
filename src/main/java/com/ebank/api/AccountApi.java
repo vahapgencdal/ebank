@@ -1,7 +1,7 @@
 package com.ebank.api;
 
-import com.ebank.model.entity.Account;
-import com.ebank.model.service.AccountService;
+import com.ebank.model.entity.BankAccount;
+import com.ebank.model.service.BankAccountService;
 import com.google.inject.Inject;
 
 import javax.ws.rs.*;
@@ -17,52 +17,52 @@ import java.util.List;
 @Path("/accounts")
 public class AccountApi {
 
-    private final AccountService accountService;
+    private final BankAccountService bankAccountService;
 
     @Inject
-    public AccountApi(AccountService accountService) {
-        this.accountService = accountService;
+    public AccountApi(BankAccountService bankAccountService) {
+        this.bankAccountService = bankAccountService;
     }
 
     @GET
     @Path("size")
     @Produces(MediaType.APPLICATION_JSON)
     public int getSize() {
-        return accountService.getSize();
+        return bankAccountService.getSize();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Account> getAll() {
-        return accountService.getAll();
+    public List<BankAccount> getAll() {
+        return bankAccountService.getAll();
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Account getById(@PathParam("id") long id) {
-        return accountService.getById(id);
+    public BankAccount getById(@PathParam("id") long id) {
+        return bankAccountService.getById(id);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Account create(Account account) {
-        return accountService.create(account);
+    public BankAccount create(BankAccount account) {
+        return bankAccountService.create(account);
     }
 
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Account update(Account account) {
-        return accountService.update(account);
+    public BankAccount update(BankAccount account) {
+        return bankAccountService.update(account);
     }
 
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void remove(@PathParam("id") long id) {
-        accountService.remove(id);
+        bankAccountService.remove(id);
     }
 }

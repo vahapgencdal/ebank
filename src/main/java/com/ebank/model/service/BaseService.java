@@ -13,9 +13,9 @@ public interface BaseService<T> {
 
     T getById(long id);
 
-    T create(T user);
+    T create(T t);
 
-    T update(T user);
+    T update(T t);
 
     void remove(long id);
 
