@@ -60,12 +60,12 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public BankAccount getByAccountNo(String accountNo, long bankId) {
-        return bankAccountRepository.getByAccountNo(accountNo, bankId);
+    public BankAccount getByAccountNo(String accountNo, String bank) {
+        return bankAccountRepository.getByAccountNo(accountNo, bank);
     }
 
     @Override
-    public BankAccount getByCurrencyIdAndBankId(long currencyId, long bankId) {
-        return bankAccountRepository.getByCurrencyIdAndBankId(currencyId, bankId);
+    public BankAccount getByCurrencyAndBank(String currencyId, String bank) {
+        return bankAccountRepository.getByCurrencyAndBank(currencyId, bank);
     }
 }

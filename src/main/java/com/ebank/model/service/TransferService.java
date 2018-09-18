@@ -3,7 +3,6 @@ package com.ebank.model.service;
 import com.ebank.model.entity.Transaction;
 import com.ebank.model.exception.InsufficientBalanceException;
 import com.ebank.model.exception.WrongBalanceTypeException;
-import com.ebank.model.request.InternalTransferWithAccountNoTransferRequest;
 
 /**
  * @author Vahap Gencdal
@@ -11,7 +10,7 @@ import com.ebank.model.request.InternalTransferWithAccountNoTransferRequest;
  * @date 16.09.2018
  * @description :Allow Cor Requests
  */
-public interface TransferService extends BaseService<InternalTransferWithAccountNoTransferRequest> {
+public interface TransferService {
 
     Transaction transferAmongItsAccounts(long senderAccountId, long receiverAccountId, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
 

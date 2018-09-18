@@ -11,9 +11,9 @@ import com.ebank.model.entity.BankAccount;
 public interface BankAccountService extends BaseService<BankAccount> {
 
 
-    BankAccount getByAccountNo(String accountNo, long bankId);
+    BankAccount getByAccountNo(String accountNo, String bank);
 
-    BankAccount getByCurrencyIdAndBankId(long currencyId, long bankId);
+    BankAccount getByCurrencyAndBank(String currency, String bank);
 
     BankAccount getById(long id);
 

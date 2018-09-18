@@ -19,19 +19,19 @@ public class TransactionMockCreater {
         transaction.setSenderAccountNo(senderAccount.getAccountNo());
         transaction.setSenderAccountAmount(senderAccount.getTotalAmount());
         transaction.setSenderAccountName(senderAccount.getName());
-        transaction.setSenderBankId(senderAccount.getBankId());
-        transaction.setSenderCurrencyId(senderAccount.getCurrencyId());
-        transaction.setSenderIsDefault(senderAccount.isDefault());
-        transaction.setSenderUserId(senderAccount.getUserId());
+        transaction.setSenderBank(senderAccount.getBank());
+        transaction.setSenderCurrency(senderAccount.getCurrency());
+        transaction.setSenderDefaultAccount(senderAccount.isDefaultAccount());
+        transaction.setSenderUser(senderAccount.getUser());
 
         transaction.setReceiverIban(receiverAccount.getIban());
         transaction.setReceiverAccountNo(receiverAccount.getAccountNo());
         transaction.setReceiverAccountAmount(receiverAccount.getTotalAmount());
         transaction.setReceiverAccountName(receiverAccount.getName());
-        transaction.setReceiverBankId(receiverAccount.getBankId());
-        transaction.setReceiverCurrencyId(receiverAccount.getCurrencyId());
-        transaction.setReceiverIsDefault(receiverAccount.isDefault());
-        transaction.setReceiverUserId(receiverAccount.getUserId());
+        transaction.setReceiverBank(receiverAccount.getBank());
+        transaction.setReceiverCurrency(receiverAccount.getCurrency());
+        transaction.setReceiverDefaultAccount(receiverAccount.isDefaultAccount());
+        transaction.setReceiverUser(receiverAccount.getUser());
 
         transaction.setStatus(TransactionStatus.PENDING.toString());
         transaction.setAmount(amount);

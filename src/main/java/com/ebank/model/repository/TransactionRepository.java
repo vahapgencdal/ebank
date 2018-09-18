@@ -10,4 +10,7 @@ import com.ebank.model.entity.Transaction;
  */
 public interface TransactionRepository extends BaseRepository<Transaction> {
 
+    Transaction getAnyPendingTransaction();
+
+    Transaction complete(Transaction transaction);
 }

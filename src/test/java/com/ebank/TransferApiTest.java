@@ -1,11 +1,13 @@
 package com.ebank;
 
-import com.ebank.datasource.DataSource;
-import com.ebank.mock.*;
-import com.ebank.model.entity.*;
+import com.ebank.mock.AccountMockCreater;
+import com.ebank.model.entity.Account;
+import com.ebank.model.entity.UserAccount;
 import com.ebank.model.request.*;
+import com.ebank.util.AccountTypeEnum;
+import com.ebank.util.BankEnum;
 import com.ebank.util.CurrencyEnum;
-import com.ebank.util.UserTypeEnum;
+import com.ebank.util.UserEnum;
 import com.sun.jersey.api.client.ClientResponse;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -24,88 +26,91 @@ import java.io.IOException;
  */
 public class TransferApiTest extends BaseApiTest {
 
-    private static long euroId;
-    private static long usdId;
-    private static long tlId;
+    private UserAccount vhpGaranTlAccount;
+    private UserAccount vhpGaranTlAccountSec;
+    private UserAccount vhpGaranUsdAccount;
+    private UserAccount vhpGaranEuroAccount;
 
-    private static long garanBankId;
-    private static long isBankId;
 
-    private static String garanBankBic;
-    private static String isBankBic;
+    private UserAccount vhpIsbankTlAccount;
+    private UserAccount vhpIsBankUsdAccount;
+    private UserAccount vhpIsBankEuroAccount;
 
-    private static String vhpIban;
-    private static String emreIban;
-    private static String gzlIban;
-    private static String esmaIban;
+    private UserAccount gzlIsBankTlAccount;
+    private UserAccount gzlIsBankUsdAccount;
 
-    private static String vhpAccount;
-    private static String emreAccount;
-    private static String gzlAccount;
-    private static String esmaAccount;
+    private UserAccount esmaIsBankTlAccount;
+    private UserAccount esmaIsBankUsdAccount;
 
-    private static long vhpGaranTlAccountId;
-    private static long vhpGaranTlAccountDepId;
+    private UserAccount emreIsBankTlAccount;
+    private UserAccount emreIsBankUsdAccount;
 
     public void initializeTest() {
-        euroId = insertCurrency(CurrencyMockCreater.create("Euro", CurrencyEnum.EURO.name(), "Euro"));
-        usdId = insertCurrency(CurrencyMockCreater.create("Dolar", CurrencyEnum.USD.name(), "American dolar"));
-        tlId = insertCurrency(CurrencyMockCreater.create("Turkish lira", CurrencyEnum.TL.name(), "Turkish Lira"));
-
-        long addressId = insertAddress(AddressMockCreater.getTest());
-        Bank garanbank = BankMockCreater.getGarantiBank(addressId);
-        garanBankBic = garanbank.getBic();
-        garanBankId = insertBank(garanbank);
-        Bank isBank = BankMockCreater.getIsBank(addressId);
-        isBankBic = isBank.getBic();
-        isBankId = insertBank(isBank);
-
-
-        //long addressId, String fullName, String email, String phone, String userType, long bankId
-        long vhpUser = insertUser(UserMockCreater.getUser(addressId, "Vahap", "vhp@gmail.com", "5423711235", UserTypeEnum.IND.toString(), garanBankId));
-        long gzlUser = insertUser(UserMockCreater.getUser(addressId, "Guzel", "guzel@gmail.com", "5424721236", UserTypeEnum.IND.toString(), garanBankId));
-        long esmaUser = insertUser(UserMockCreater.getUser(addressId, "Esma", "esma@gmail.com", "5426731237", UserTypeEnum.IND.toString(), isBankId));
-        long emreUser = insertUser(UserMockCreater.getUser(addressId, "Emre", "emre@gmail.com", "5473741238", UserTypeEnum.IND.toString(), isBankId));
-
 
         //bank own account
 
-//long userId, long currencyId, long accountType, String name, long bankId, boolean isDefault,long totalAmount
-        UserAccount vhpGaranTlAccount = AccountMockCreater.getUserAccount(vhpUser, tlId, 0, "Tl Drawing Account", garanBankId, true, 1000);
-        UserAccount vhpGaranTlAccountDep = AccountMockCreater.getUserAccount(vhpUser, tlId, 0, "Tl Deposit Account", garanBankId, true, 1000);
-        vhpIban = vhpGaranTlAccount.getIban();
-        vhpAccount = vhpGaranTlAccount.getAccountNo();
-        vhpGaranTlAccountId = insertAccount(vhpGaranTlAccount, "users");
-        vhpGaranTlAccountDepId = insertAccount(vhpGaranTlAccountDep, "users");
-        long vhpIsBankUsdAccount = insertAccount(AccountMockCreater.getUserAccount(vhpUser, usdId, 0, "Dolar Currency Account", garanBankId, true, 1000), "users");
-        long vhpIsBankEuroAccount = insertAccount(AccountMockCreater.getUserAccount(vhpUser, euroId, 0, "Euro Currency Account", garanBankId, true, 1000), "users");
+//      long userId, long currencyId, long accountType, String name, long bankId, boolean isDefault,long totalAmount
+        vhpGaranTlAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000);
+        vhpGaranTlAccountSec = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Sec Drawing Account", BankEnum.GARAN.getVal(), true, 1000);
+        vhpGaranUsdAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Deposit Account", BankEnum.GARAN.getVal(), true, 1000);
+        vhpGaranEuroAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.EURO.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000);
 
-        UserAccount gzlIsBankTlAccount = AccountMockCreater.getUserAccount(gzlUser, tlId, 0, "Tl Drawing Account", garanBankId, true, 1000);
-        gzlIban = gzlIsBankTlAccount.getIban();
-        gzlAccount = gzlIsBankTlAccount.getAccountNo();
+        vhpIsbankTlAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Deposit Account", BankEnum.IS.getVal(), true, 1000);
+        vhpIsBankUsdAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Dolar Currency Account", BankEnum.IS.getVal(), true, 1000);
+        vhpIsBankEuroAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.EURO.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Euro Currency Account", BankEnum.IS.getVal(), true, 1000);
+
+        gzlIsBankTlAccount = AccountMockCreater.getUserAccount(UserEnum.GUZEL.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Guzel Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000);
+        gzlIsBankUsdAccount = AccountMockCreater.getUserAccount(UserEnum.GUZEL.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Guzel Dolar Currency Account", BankEnum.GARAN.getVal(), true, 1000);
+
+        esmaIsBankTlAccount = AccountMockCreater.getUserAccount(UserEnum.ESMA.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Esma Tl Drawing Account", BankEnum.IS.getVal(), true, 1000);
+        esmaIsBankUsdAccount = AccountMockCreater.getUserAccount(UserEnum.ESMA.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Esma Dolar Currency Account", BankEnum.IS.getVal(), true, 1000);
+
+        emreIsBankTlAccount = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Emre Tl Drawing Account", BankEnum.IS.getVal(), true, 1000);
+        emreIsBankUsdAccount = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Emre Dolar Currency Account", BankEnum.IS.getVal(), true, 1000);
+
         long gzlIsBankTlAccountId = insertAccount(gzlIsBankTlAccount, "users");
-        long gzlIsBankUsdAccount = insertAccount(AccountMockCreater.getUserAccount(gzlUser, usdId, 0, "Dolar Currency Account", garanBankId, true, 1000), "users");
+        long gzlIsBankUsdAccountId = insertAccount(gzlIsBankUsdAccount, "users");
 
-        UserAccount esmaIsBankTlAccount = AccountMockCreater.getUserAccount(esmaUser, tlId, 0, "Tl Drawing Account", isBankId, true, 1000);
-        esmaIban = esmaIsBankTlAccount.getIban();
-        esmaAccount = esmaIsBankTlAccount.getAccountNo();
+        long vhpGaranTlAccountId = insertAccount(vhpGaranTlAccount, "users");
+        long vhpGaranUsdAccountId = insertAccount(vhpGaranUsdAccount, "users");
+        long vhpGaranEuroAccountId = insertAccount(vhpGaranEuroAccount, "users");
+        long vhpGaranTlAccountSecId = insertAccount(vhpGaranTlAccountSec, "users");
+
+        long vhpIsBankTlAccountId = insertAccount(vhpIsbankTlAccount, "users");
+        long vhpIsBankUsdAccountId = insertAccount(vhpIsBankUsdAccount, "users");
+        long vhpIsBankEuroAccountId = insertAccount(vhpIsBankEuroAccount, "users");
+
         long esmaIsBankTlAccountId = insertAccount(esmaIsBankTlAccount, "users");
-        long esmaIsBankUsdAccount = insertAccount(AccountMockCreater.getUserAccount(esmaUser, usdId, 0, "Dolar Currency Account", isBankId, true, 1000), "users");
+        long esmaIsBankUsdAccountId = insertAccount(esmaIsBankUsdAccount, "users");
 
-        UserAccount emreIsBankTlAccount = AccountMockCreater.getUserAccount(emreUser, tlId, 0, "Tl Drawing Account", isBankId, true, 1000);
-        emreIban = emreIsBankTlAccount.getIban();
-        emreAccount = emreIsBankTlAccount.getAccountNo();
         long emreIsBankTlAccountId = insertAccount(emreIsBankTlAccount, "users");
-        long emreIsBankUsdAccount = insertAccount(AccountMockCreater.getUserAccount(emreUser, usdId, 0, "Dolar Currency Account", isBankId, true, 1000), "users");
+        long emreIsBankUsdAccountId = insertAccount(emreIsBankUsdAccount, "users");
 
-        //long userId, long currencyId, long accountType, long bankId, boolean isDefault
-        insertAccount(AccountMockCreater.getGarantiOwnAccount(0, tlId, 0, isBankId, true), "banks");
-        insertAccount(AccountMockCreater.getGarantiOwnAccount(0, usdId, 0, isBankId, false), "banks");
-        insertAccount(AccountMockCreater.getGarantiOwnAccount(0, euroId, 0, isBankId, false), "banks");
-        insertAccount(AccountMockCreater.getGarantiOwnAccount(0, tlId, 0, garanBankId, true), "banks");
-        insertAccount(AccountMockCreater.getGarantiOwnAccount(0, usdId, 0, garanBankId, false), "banks");
-        insertAccount(AccountMockCreater.getGarantiOwnAccount(0, euroId, 0, garanBankId, false), "banks");
 
+        gzlIsBankTlAccount.setId(gzlIsBankTlAccountId);
+        gzlIsBankUsdAccount.setId(gzlIsBankUsdAccountId);
+
+        vhpGaranTlAccount.setId(vhpGaranTlAccountId);
+        vhpGaranUsdAccount.setId(vhpGaranUsdAccountId);
+        vhpGaranEuroAccount.setId(vhpGaranEuroAccountId);
+        vhpGaranTlAccountSec.setId(vhpGaranTlAccountSecId);
+
+        vhpIsbankTlAccount.setId(vhpIsBankTlAccountId);
+        vhpIsBankUsdAccount.setId(vhpIsBankUsdAccountId);
+        vhpIsBankEuroAccount.setId(vhpIsBankEuroAccountId);
+
+        esmaIsBankTlAccount.setId(esmaIsBankTlAccountId);
+        esmaIsBankUsdAccount.setId(esmaIsBankUsdAccountId);
+
+        emreIsBankTlAccount.setId(emreIsBankTlAccountId);
+        emreIsBankUsdAccount.setId(emreIsBankUsdAccountId);
+
+        insertAccount(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), true), "banks");
+        insertAccount(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), false), "banks");
+        insertAccount(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.EURO.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), false), "banks");
+        insertAccount(AccountMockCreater.getIsBankOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.IS.getVal(), true), "banks");
+        insertAccount(AccountMockCreater.getIsBankOwnAccount(CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.IS.getVal(), false), "banks");
+        insertAccount(AccountMockCreater.getIsBankOwnAccount(CurrencyEnum.EURO.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.IS.getVal(), false), "banks");
 
     }
 
@@ -114,7 +119,7 @@ public class TransferApiTest extends BaseApiTest {
         super();
     }
 
-    public long insertAccount(Account account, String path) {
+    private long insertAccount(Account account, String path) {
         try {
             String content = json(account);
             ClientResponse resp = webService.path("api").path("accounts" + "/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
@@ -126,71 +131,19 @@ public class TransferApiTest extends BaseApiTest {
         return 0;
     }
 
-    public long insertUser(User user) {
-        try {
-            String content = json(user);
-            ClientResponse resp = webService.path("api").path("users").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-            JSONObject js = new JSONObject(resp.getEntity(String.class));
-            return js.getLong("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-
-    private long insertAddress(Address user) {
-        try {
-            String content = json(user);
-            ClientResponse resp = webService.path("api").path("addresses").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-            JSONObject js = new JSONObject(resp.getEntity(String.class));
-            return js.getLong("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    public long insertBank(Bank user) {
-        try {
-            String content = json(user);
-            ClientResponse resp = webService.path("api").path("banks").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-            JSONObject bankJs = new JSONObject(resp.getEntity(String.class));
-            return bankJs.getLong("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-
-    }
-
-
-    private long insertCurrency(Currency currency) {
-        try {
-            String content = json(currency);
-            ClientResponse resp = webService.path("api").path("currencies").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-            JSONObject currencyJs = new JSONObject(resp.getEntity(String.class));
-            return currencyJs.getLong("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-
     @Test
     public void transferAmongItsAccounts() throws JSONException, IOException {
         this.initializeTest();
         String path = "internal/among";
         AmongTransferItsAccountsRequest request = new AmongTransferItsAccountsRequest();
-        request.setAmount(100);
-        request.setReceiverAccountId(vhpGaranTlAccountDepId);
-        request.setSenderAccountId(vhpGaranTlAccountId);
+        request.setAmount(10);
+        request.setReceiverAccountId(vhpGaranTlAccountSec.getId());
+        request.setSenderAccountId(vhpGaranTlAccount.getId());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         JSONObject js = new JSONObject(resp.getEntity(String.class));
         System.out.println(js.toString());
-        DataSource.clearAllList();
+        // DataSource.clearAllList();
         Assert.assertTrue(js.getLong("id") > 0);
     }
 
@@ -199,14 +152,14 @@ public class TransferApiTest extends BaseApiTest {
         this.initializeTest();
         String path = "internal/iban";
         InternalTransferWithIbanRequest request = new InternalTransferWithIbanRequest();
-        request.setAmount(100);
-        request.setIban(gzlIban);
-        request.setSenderAccountId(vhpGaranTlAccountId);
+        request.setAmount(10);
+        request.setIban(esmaIsBankTlAccount.getIban());
+        request.setSenderAccountId(vhpIsbankTlAccount.getId());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         JSONObject js = new JSONObject(resp.getEntity(String.class));
         System.out.println(js.toString());
-        DataSource.clearAllList();
+        //DataSource.clearAllList();
         Assert.assertTrue(js.getLong("id") > 0);
     }
 
@@ -215,15 +168,15 @@ public class TransferApiTest extends BaseApiTest {
         this.initializeTest();
         String path = "internal/account";
         InternalTransferWithAccountNoTransferRequest request = new InternalTransferWithAccountNoTransferRequest();
-        request.setAmount(100);
-        request.setAccountNo(gzlAccount);
-        request.setBic(isBankBic);
-        request.setSenderAccountId(vhpGaranTlAccountId);
+        request.setAmount(10);
+        request.setAccountNo(gzlIsBankTlAccount.getAccountNo());
+        request.setBic(gzlIsBankTlAccount.getBank());
+        request.setSenderAccountId(vhpIsbankTlAccount.getId());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         JSONObject js = new JSONObject(resp.getEntity(String.class));
         System.out.println(js.toString());
-        DataSource.clearAllList();
+        //DataSource.clearAllList();
         Assert.assertTrue(js.getLong("id") > 0);
     }
 
@@ -232,13 +185,13 @@ public class TransferApiTest extends BaseApiTest {
         this.initializeTest();
         String path = "external/iban";
         ExternalTransferWithIbanRequest request = new ExternalTransferWithIbanRequest();
-        request.setAmount(100);
-        request.setIban(esmaIban);
-        request.setSenderAccountId(vhpGaranTlAccountId);
+        request.setAmount(10);
+        request.setIban(emreIsBankTlAccount.getIban());
+        request.setSenderAccountId(vhpGaranTlAccount.getId());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         JSONObject js = new JSONObject(resp.getEntity(String.class));
-        DataSource.clearAllList();
+        //DataSource.clearAllList();
         Assert.assertTrue(js.getLong("id") > 0);
     }
 
@@ -247,14 +200,13 @@ public class TransferApiTest extends BaseApiTest {
         this.initializeTest();
         String path = "external/account";
         ExternalTransferWithAccountNoRequest request = new ExternalTransferWithAccountNoRequest();
-        request.setAmount(100);
-        request.setAccountNo(emreAccount);
-        request.setBic(isBankBic);
-        request.setSenderAccountId(vhpGaranTlAccountId);
+        request.setAmount(10);
+        request.setAccountNo(emreIsBankTlAccount.getAccountNo());
+        request.setBic(emreIsBankTlAccount.getBank());
+        request.setSenderAccountId(vhpGaranTlAccount.getId());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         JSONObject js = new JSONObject(resp.getEntity(String.class));
-        DataSource.clearAllList();
         Assert.assertTrue(js.getLong("id") > 0);
 
     }
@@ -263,18 +215,8 @@ public class TransferApiTest extends BaseApiTest {
     @Test
     public void get() throws Exception {
         this.initializeTest();
-        String path = "internal/among";
-        AmongTransferItsAccountsRequest request = new AmongTransferItsAccountsRequest();
-        request.setAmount(100);
-        request.setReceiverAccountId(vhpGaranTlAccountId);
-        request.setSenderAccountId(vhpGaranTlAccountDepId);
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-
-        ClientResponse respGet = webService.path("api").path("transactions/" + js.getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse respGet = webService.path("api").path("transactions/1").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         JSONObject getById = new JSONObject(respGet.getEntity(String.class));
-        DataSource.clearAllList();
         Assert.assertNotNull(getById);
 
     }
@@ -282,6 +224,7 @@ public class TransferApiTest extends BaseApiTest {
 
     @Test
     public void getAll() throws Exception {
+        this.initializeTest();
         ClientResponse resp = webService.path("api").path("transactions").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         String actual = resp.getEntity(String.class);
         JSONArray jsonArray = new JSONArray(actual);

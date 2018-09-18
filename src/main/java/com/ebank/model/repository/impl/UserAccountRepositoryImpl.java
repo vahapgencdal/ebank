@@ -6,7 +6,6 @@ import com.ebank.model.repository.UserAccountRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -30,8 +29,6 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
 
     @Override
     public UserAccount create(UserAccount account) {
-        account.setCDate(LocalDateTime.now());
-        account.setCUser(1);
         account.setId(getCurrentMaxId() + 1);
         DataSource.userAccounts.add(account);
         return account;
@@ -43,9 +40,6 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
         byId.setTotalAmount(account.getTotalAmount());
         byId.setBlockedAmount(account.getBlockedAmount());
         byId.setName(account.getName());
-        byId.setUDate(LocalDateTime.now());
-        byId.setUUser(1);
-        byId.setStatus(account.isStatus());
 
         return byId;
     }
@@ -73,8 +67,8 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
     }
 
     @Override
-    public UserAccount getByAccountTypeId(long accountTypeId) {
-        return DataSource.userAccounts.parallelStream().filter(account -> account.getAccountType() == accountTypeId).findAny().orElse(null);
+    public UserAccount getByAccountType(String accountType) {
+        return DataSource.userAccounts.parallelStream().filter(account -> account.getType().equals(accountType)).findAny().orElse(null);
     }
 
     @Override
@@ -83,16 +77,16 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
     }
 
     @Override
-    public UserAccount getByAccountNo(String accountNo, long bankId) {
-        return DataSource.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBankId() == bankId).findAny().orElse(null);
+    public UserAccount getByAccountNo(String accountNo, String bank) {
+        return DataSource.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
     @Override
-    public UserAccount getByAccountNoAndBankIdAndCurrencyId(String accountNo, long bankId, long currencyId) {
-        UserAccount userAccount = DataSource.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBankId() == bankId && account.getCurrencyId() == currencyId).findAny().orElse(null);
+    public UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency) {
+        UserAccount userAccount = DataSource.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank) && account.getCurrency().equals(currency)).findAny().orElse(null);
 
         if (userAccount == null)
-            return DataSource.userAccounts.parallelStream().filter(account -> account.isDefault()).findAny().orElse(null);
+            return DataSource.userAccounts.parallelStream().filter(account -> account.isDefaultAccount()).findAny().orElse(null);
         else return userAccount;
     }
 

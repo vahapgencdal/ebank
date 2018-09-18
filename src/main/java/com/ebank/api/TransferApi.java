@@ -7,9 +7,11 @@ import com.ebank.model.request.*;
 import com.ebank.model.service.TransferService;
 import com.google.inject.Inject;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * @author Vahap Gencdal
@@ -65,19 +67,6 @@ public class TransferApi {
     @Produces(MediaType.APPLICATION_JSON)
     public Transaction transferAmongExterNalBankAccountsWithAccountNo(ExternalTransferWithAccountNoRequest request) throws InsufficientBalanceException, WrongBalanceTypeException {
         return transferService.transferAmongExterNalBankAccountsWithAccountNo(request.getSenderAccountId(), request.getAccountNo(), request.getBic(), request.getAmount());
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<InternalTransferWithAccountNoTransferRequest> getAll() {
-        return transferService.getAll();
-    }
-
-    @GET
-    @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public InternalTransferWithAccountNoTransferRequest getById(@PathParam("id") long id) {
-        return transferService.getById(id);
     }
 
 }

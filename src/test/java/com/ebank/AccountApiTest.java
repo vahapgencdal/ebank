@@ -1,19 +1,7 @@
 package com.ebank;
 
-import com.ebank.mock.AccountMockCreater;
-import com.ebank.mock.AccountTypeMockCreater;
-import com.ebank.mock.CurrencyMockCreater;
-import com.ebank.mock.UserMockCreater;
-import com.ebank.model.entity.Account;
-import com.ebank.model.entity.AccountType;
-import com.ebank.model.entity.Currency;
-import com.ebank.model.entity.User;
-import com.sun.jersey.api.client.ClientResponse;
-import org.codehaus.jettison.json.JSONObject;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
-
-import javax.ws.rs.core.MediaType;
 
 /**
  * @author Vahap Gencdal
@@ -28,45 +16,6 @@ public class AccountApiTest extends BaseApiTest {
         super();
     }
 
-
-    public ClientResponse insert(Account account) throws Exception {
-        String content = json(account);
-        ClientResponse resp = webService.path("api").path("accounts").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        return resp;
-    }
-
-
-    public ClientResponse insertCombo() throws Exception {
-        long userResponse = insertUser(UserMockCreater.getTest());
-        long currencyResponse = insertCurrency(CurrencyMockCreater.getTest());
-        long accountTypeResp = insertAccountType(AccountTypeMockCreater.getDrawingType());
-
-        Account account = AccountMockCreater.getBankAccount(accountTypeResp, currencyResponse, userResponse, 0);
-        String content = json(account);
-        ClientResponse resp = webService.path("api").path("accounts").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        return resp;
-    }
-
-    public long insertUser(User user) throws Exception {
-        String content = json(user);
-        ClientResponse resp = webService.path("api").path("users").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject userJs = new JSONObject(resp.getEntity(String.class));
-        return userJs.getLong("id");
-    }
-
-    public long insertCurrency(Currency currency) throws Exception {
-        String content = json(currency);
-        ClientResponse resp = webService.path("api").path("currencies").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject currencyJs = new JSONObject(resp.getEntity(String.class));
-        return currencyJs.getLong("id");
-    }
-
-    public long insertAccountType(AccountType accountType) throws Exception {
-        String content = json(accountType);
-        ClientResponse resp = webService.path("api").path("accountTypes").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject accountTypeJS = new JSONObject(resp.getEntity(String.class));
-        return accountTypeJS.getLong("id");
-    }
 
 /*
     @Test

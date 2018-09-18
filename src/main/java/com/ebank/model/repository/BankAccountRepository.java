@@ -12,7 +12,7 @@ public interface BankAccountRepository extends BaseRepository<BankAccount> {
 
     BankAccount getByIban(String iban);
 
-    BankAccount getByAccountNo(String accountNo, long bankId);
+    BankAccount getByAccountNo(String accountNo, String bank);
 
-    BankAccount getByCurrencyIdAndBankId(long currencyId, long bankId);
+    BankAccount getByCurrencyAndBank(String currency, String bank);
 }

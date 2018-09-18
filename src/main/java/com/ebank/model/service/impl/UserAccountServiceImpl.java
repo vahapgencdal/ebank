@@ -60,12 +60,12 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public UserAccount getByAccountNoAndBankIdAndCurrencyId(String accountNo, long bankId, long currencyId) {
-        return userAccountRepository.getByAccountNoAndBankIdAndCurrencyId(accountNo, bankId, currencyId);
+    public UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency) {
+        return userAccountRepository.getByAccountNoAndBankAndCurrency(accountNo, bank, currency);
     }
 
     @Override
-    public UserAccount getByAccountNo(String accountNo, long bankId) {
-        return userAccountRepository.getByAccountNo(accountNo, bankId);
+    public UserAccount getByAccountNo(String accountNo, String bank) {
+        return userAccountRepository.getByAccountNo(accountNo, bank);
     }
 }

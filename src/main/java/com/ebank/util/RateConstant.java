@@ -16,7 +16,6 @@ public enum RateConstant {
 
     private final double rate;
 
-    // Reverse-lookup map for getting a day from an abbreviation
     private static final Map<String, RateConstant> lookup = new HashMap<String, RateConstant>();
 
     static {

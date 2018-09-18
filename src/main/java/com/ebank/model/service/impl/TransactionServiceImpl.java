@@ -53,4 +53,14 @@ public class TransactionServiceImpl implements TransactionService {
     public int getSize() {
         return this.transactionRepository.getSize();
     }
+
+    @Override
+    public Transaction getAnyPendingTransaction() {
+        return transactionRepository.getAnyPendingTransaction();
+    }
+
+    @Override
+    public Transaction complete(Transaction transaction) {
+        return transactionRepository.complete(transaction);
+    }
 }

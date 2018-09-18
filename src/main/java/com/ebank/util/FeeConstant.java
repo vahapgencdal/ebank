@@ -11,12 +11,11 @@ import java.util.Map;
  */
 public enum FeeConstant {
 
-    EURO_USD(1.2), EURO_TL(1.5), USD_TL(1.4), USD_EURO(1.2), TL_EURO(1.5), TL_USD(1.4), EXTERNAL(4.4), INTERNAL(2.0);
+    EURO_USD(0.2), EURO_TL(0.5), USD_TL(0.4), USD_EURO(0.2), TL_EURO(0.5), TL_USD(0.4), EXTERNAL(0.8), INTERNAL(0.2);
 
 
     private final double rate;
 
-    // Reverse-lookup map for getting a day from an abbreviation
     private static final Map<String, FeeConstant> lookup = new HashMap<String, FeeConstant>();
 
     static {

@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BankAccount extends Account {
-    private long bankId;
+    private String bank;
 }

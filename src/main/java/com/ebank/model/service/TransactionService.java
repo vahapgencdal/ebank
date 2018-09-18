@@ -10,4 +10,8 @@ import com.ebank.model.entity.Transaction;
  */
 public interface TransactionService extends BaseService<Transaction> {
 
+    Transaction getAnyPendingTransaction();
+
+    Transaction complete(Transaction transaction);
+
 }

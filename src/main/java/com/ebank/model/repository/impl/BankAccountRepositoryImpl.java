@@ -6,7 +6,6 @@ import com.ebank.model.repository.BankAccountRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -30,8 +29,6 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
 
     @Override
     public BankAccount create(BankAccount account) {
-        account.setCDate(LocalDateTime.now());
-        account.setCUser(1);
         account.setId(getCurrentMaxId() + 1);
         DataSource.bankAccounts.add(account);
         return account;
@@ -43,9 +40,6 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
         byId.setTotalAmount(account.getTotalAmount());
         byId.setBlockedAmount(account.getBlockedAmount());
         byId.setName(account.getName());
-        byId.setUDate(LocalDateTime.now());
-        byId.setUUser(1);
-        byId.setStatus(account.isStatus());
         return byId;
     }
 
@@ -79,13 +73,13 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
     }
 
     @Override
-    public BankAccount getByAccountNo(String accountNo, long bankId) {
-        return DataSource.bankAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBankId() == bankId).findAny().orElse(null);
+    public BankAccount getByAccountNo(String accountNo, String bank) {
+        return DataSource.bankAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
     @Override
-    public BankAccount getByCurrencyIdAndBankId(long currencyId, long bankId) {
-        return DataSource.bankAccounts.parallelStream().filter(account -> account.getCurrencyId() == currencyId && account.getBankId() == bankId).findAny().orElse(null);
+    public BankAccount getByCurrencyAndBank(String currency, String bank) {
+        return DataSource.bankAccounts.parallelStream().filter(account -> account.getCurrency().equals(currency) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
 

@@ -29,6 +29,9 @@
           <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
           <element id="library" level="project" name="Maven: com.google.inject.extensions:guice-servlet:3.0" />
           <element id="library" level="project" name="Maven: com.sun.jersey.contribs:jersey-guice:1.17.1" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.5" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
         </element>
       </element>
       <element id="directory" name="META-INF">

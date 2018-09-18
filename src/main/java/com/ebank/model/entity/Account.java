@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.time.LocalDateTime;
 
 /**
  * @author Vahap Gencdal
@@ -20,20 +19,13 @@ import java.time.LocalDateTime;
 public class Account {
 
     private long id;
-    private long accountType;//DEPOSIT DRAW
+    private String type;
     private String name;
     private String accountNo;
     private String iban;
     private double totalAmount;
     private double blockedAmount;
-    private long currencyId;
-    private boolean isPublic;
-    private boolean isDefault;
-
-    private boolean status;
-    private LocalDateTime cDate;
-    private LocalDateTime uDate;
-    private long cUser;
-    private long uUser;
+    private String currency;
+    private boolean defaultAccount;
 
 }
