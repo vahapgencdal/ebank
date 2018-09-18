@@ -1,12 +1,7 @@
 package com.ebank;
 
-import com.ebank.mock.TransactionMockCreater;
 import com.ebank.model.entity.Transaction;
 import com.sun.jersey.api.client.ClientResponse;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 
@@ -27,16 +22,7 @@ public class TransactionApiTest extends BaseApiTest {
         ClientResponse resp = webService.path("api").path("transactions").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         return resp;
     }
-
-    @Test
-    public void create() throws Exception {
-
-        ClientResponse response = insert(TransactionMockCreater.getTest());
-
-        JSONObject js = new JSONObject(response.getEntity(String.class));
-
-        Assert.assertNotNull(js);
-    }
+    /*
 
     @Test
     public void get() throws Exception {
@@ -85,4 +71,5 @@ public class TransactionApiTest extends BaseApiTest {
         JSONArray jsonArray = new JSONArray(actual);
         Assert.assertTrue(jsonArray.length() > 0);
     }
+    */
 }

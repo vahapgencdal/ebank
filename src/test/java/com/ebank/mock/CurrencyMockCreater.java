@@ -12,9 +12,17 @@ public class CurrencyMockCreater {
 
     public static Currency getTest() {
         Currency currency = new Currency();
-        currency.setDescr("Euro");
-        currency.setName("Euro");
-        currency.setShrtCode("EUR");
+        currency.setDescr("Eusro");
+        currency.setName("Eurso");
+        currency.setShrtCode("EURs");
+        return currency;
+    }
+
+    public static Currency create(String name, String shrtCode, String descr) {
+        Currency currency = new Currency();
+        currency.setDescr(descr);
+        currency.setName(name);
+        currency.setShrtCode(shrtCode);
         return currency;
     }
 

@@ -53,7 +53,7 @@ public class UserMockCreater {
 
     public static User getFerhatUser(long addressId, long bankId) {
         User user = new User();
-        user.setFullName("Garanti");
+        user.setFullName("Ferhat Kakun");
         user.setEmail("ferhat@gmail.com");
         user.setStatus(Boolean.TRUE);
         user.setAddressId(addressId);
@@ -62,7 +62,7 @@ public class UserMockCreater {
         return user;
     }
 
-    public static User getBankUser(long addressId, String fullName, String email, String phone, String userType, long bankId) {
+    public static User getUser(long addressId, String fullName, String email, String phone, String userType, long bankId) {
         User user = new User();
         user.setFullName(fullName);
         user.setEmail(email);

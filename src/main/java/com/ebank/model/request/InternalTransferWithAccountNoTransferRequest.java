@@ -9,5 +9,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @description TODO: Class Description
  */
 @XmlRootElement
-public class ExternalTransferWithAccountNoRequest extends AccountNoTransferRequest {
+public class InternalTransferWithAccountNoTransferRequest extends AccountNoTransferRequest {
+
 }

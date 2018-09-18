@@ -56,6 +56,6 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public Bank getByBicCode(String bicCode) {
-        return null;
+        return this.bankRepository.getByBicCode(bicCode);
     }
 }

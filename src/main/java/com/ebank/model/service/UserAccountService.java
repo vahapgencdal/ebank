@@ -18,4 +18,5 @@ public interface UserAccountService extends BaseService<UserAccount> {
     UserAccount getByIban(String iban);
 
     UserAccount getByAccountNoAndBankIdAndCurrencyId(String accountNo, long id, long currencyId);
+
 }

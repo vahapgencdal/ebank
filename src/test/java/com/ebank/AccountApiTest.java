@@ -9,11 +9,8 @@ import com.ebank.model.entity.AccountType;
 import com.ebank.model.entity.Currency;
 import com.ebank.model.entity.User;
 import com.sun.jersey.api.client.ClientResponse;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
-import org.junit.Assert;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import javax.ws.rs.core.MediaType;
@@ -37,6 +34,7 @@ public class AccountApiTest extends BaseApiTest {
         ClientResponse resp = webService.path("api").path("accounts").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         return resp;
     }
+
 
     public ClientResponse insertCombo() throws Exception {
         long userResponse = insertUser(UserMockCreater.getTest());
@@ -70,7 +68,7 @@ public class AccountApiTest extends BaseApiTest {
         return accountTypeJS.getLong("id");
     }
 
-
+/*
     @Test
     public void create() throws Exception {
         long userResponse = insertUser(UserMockCreater.getTest());
@@ -128,5 +126,7 @@ public class AccountApiTest extends BaseApiTest {
         JSONArray jsonArray = new JSONArray(actual);
         Assert.assertTrue(jsonArray.length() > 0);
     }
+
+    */
 
 }

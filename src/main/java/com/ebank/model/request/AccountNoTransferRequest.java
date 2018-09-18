@@ -9,14 +9,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Vahap Gencdal
  * @email avahap19@gmail.com
- * @date 17.09.2018
+ * @date 18.09.2018
  * @description TODO: Class Description
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class AmongTransferItsAccountsRequest extends TransferRequest {
-    private long receiverAccountId;
+public class AccountNoTransferRequest extends TransferRequest {
+    private String accountNo;
+    private String bic;
     private double amount;
 }

@@ -6,6 +6,7 @@ import com.ebank.model.repository.TransactionRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -29,6 +30,8 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
     @Override
     public Transaction create(Transaction transaction) {
         transaction.setId(getCurrentMaxId() + 1);
+        transaction.setCDate(LocalDateTime.now());
+        transaction.setCUser(1);
         DataSource.transactions.add(transaction);
         return transaction;
     }
@@ -36,6 +39,8 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
     @Override
     public Transaction update(Transaction transaction) {
         Transaction byId = this.getById(transaction.getId());
+        byId.setUDate(LocalDateTime.now());
+        byId.setUUser(1);
         byId.setStatus(transaction.getStatus());
         return byId;
     }
@@ -50,17 +55,6 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
     public int getSize() {
         return DataSource.transactions.size();
     }
-
-    private List<Transaction> createTransactions() {
-        int numberOfTransactions = 10;
-        for (int i = 0; i < numberOfTransactions; i++) {
-            Transaction transaction = new Transaction();
-            transaction.setId(i + 1);
-            DataSource.transactions.add(transaction);
-        }
-        return DataSource.transactions;
-    }
-
 
     private long getCurrentMaxId() {
         if (DataSource.transactions.isEmpty()) return 0;

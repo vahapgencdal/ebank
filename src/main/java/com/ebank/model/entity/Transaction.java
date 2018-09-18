@@ -18,21 +18,34 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @XmlRootElement
 public class Transaction {
+
     private long id;
-    private long transactionType;
+
+    private String senderAccountName;
     private String senderAccountNo;
     private String senderIban;
-    private String senderFullName;
-    private String senderBic;
+    private double senderAccountAmount;
+    private long senderCurrencyId;
+    private boolean senderIsDefault;
+    private long senderBankId;
+    private long senderUserId;
+
+    private String receiverAccountName;
     private String receiverAccountNo;
     private String receiverIban;
-    private String receiverFullName;
-    private String receiverBic;
+    private double receiverAccountAmount;
+    private long receiverCurrencyId;
+    private boolean receiverIsDefault;
+    private long receiverBankId;
+    private long receiverUserId;
+
     private double amount;
     private double fee;
     private String status;//PROCESSING,REJECTED,COMPLETED
 
     private LocalDateTime cDate;
-    private LocalDateTime cUSer;
+    private LocalDateTime uDate;
+    private long cUser;
+    private long uUser;
 
 }

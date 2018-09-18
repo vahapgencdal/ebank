@@ -6,8 +6,8 @@ import com.ebank.model.repository.BankAccountRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Vahap Gencdal
@@ -30,6 +30,8 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
 
     @Override
     public BankAccount create(BankAccount account) {
+        account.setCDate(LocalDateTime.now());
+        account.setCUser(1);
         account.setId(getCurrentMaxId() + 1);
         DataSource.bankAccounts.add(account);
         return account;
@@ -38,14 +40,12 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
     @Override
     public BankAccount update(BankAccount account) {
         BankAccount byId = this.getById(account.getId());
-        byId.setAccountNo(account.getAccountNo());
-        byId.setIban(account.getIban());
-        byId.setStatus(account.isStatus());
-        byId.setAmount(account.getAmount());
-        byId.setCurrencyId(account.getCurrencyId());
-        byId.setPublic(account.isPublic());
+        byId.setTotalAmount(account.getTotalAmount());
+        byId.setBlockedAmount(account.getBlockedAmount());
         byId.setName(account.getName());
-
+        byId.setUDate(LocalDateTime.now());
+        byId.setUUser(1);
+        byId.setStatus(account.isStatus());
         return byId;
     }
 
@@ -58,18 +58,6 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
     @Override
     public int getSize() {
         return DataSource.bankAccounts.size();
-    }
-
-    private List<BankAccount> createAccounts() {
-        int numberOfAccounts = 10;
-        for (int i = 0; i < numberOfAccounts; i++) {
-            BankAccount account = new BankAccount();
-            account.setId(i + 1);
-            account.setIban(UUID.randomUUID().toString());
-            account.setAccountNo(UUID.randomUUID().toString());
-            DataSource.bankAccounts.add(account);
-        }
-        return DataSource.bankAccounts;
     }
 
 

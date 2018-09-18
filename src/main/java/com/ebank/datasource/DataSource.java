@@ -21,4 +21,16 @@ public class DataSource {
     public static List<Currency> currencies = new ArrayList<>();
     public static List<Transaction> transactions = new ArrayList<>();
     public static List<User> users = new ArrayList<>();
+
+
+    public static void clearAllList() {
+        bankAccounts.clear();
+        userAccounts.clear();
+        accountTypes.clear();
+        addresses.clear();
+        banks.clear();
+        counterParties.clear();
+        currencies.clear();
+        users.clear();
+    }
 }

@@ -43,7 +43,6 @@ public class AppBinder extends AbstractModule {
         bind(TransactionRepository.class).to(TransactionRepositoryImpl.class);
         bind(TransactionService.class).to(TransactionServiceImpl.class);
 
-        bind(TransferRepository.class).to(TransferRepositoryImpl.class);
         bind(TransferService.class).to(TransferServiceImpl.class);
 
     }

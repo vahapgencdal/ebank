@@ -24,7 +24,8 @@ public class Account {
     private String name;
     private String accountNo;
     private String iban;
-    private double amount;
+    private double totalAmount;
+    private double blockedAmount;
     private long currencyId;
     private boolean isPublic;
     private boolean isDefault;
