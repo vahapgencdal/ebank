@@ -53,15 +53,13 @@ public class TransferServiceImpl implements TransferService {
         double feeRate = getFee(senderAccount, receiverAccount);
         double senderBlockedAmount = senderAccount.getBlockedAmount() + amount + feeRate * amount;
 
-        if (senderAccount.getTotalAmount() < amount + feeRate * amount) {
+        if (senderAccount.getTotalAmount() - senderBlockedAmount < amount + feeRate * amount) {
             throw new InsufficientBalanceException("Your Account Amount little than you want to send and fee");
         } else if (amount < 0 || amount == 0) {
             throw new WrongBalanceTypeException("Amount must be bigger than zero");
         } else {
 
             senderAccount.setBlockedAmount(senderBlockedAmount);
-            double totalAmount = senderAccount.getTotalAmount() - (amount + feeRate * amount);
-            senderAccount.setTotalAmount(totalAmount);
 
             Transaction transaction = new Transaction();
             transaction.setSenderAccountId(senderAccount.getId());
@@ -88,113 +86,40 @@ public class TransferServiceImpl implements TransferService {
             transaction.setAmount(amount);
             transaction.setFee(feeRate);
             Transaction t = transactionService.create(transaction);
-            userAccountService.create(senderAccount);
+            userAccountService.update(senderAccount);
             return t;
         }
 
     }
 
     @Override
-    public Transaction transferAmongItsAccounts(long senderAccountId, long receiverAccountId, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
-        UserAccount senderAccount = userAccountService.getById(senderAccountId);
-        UserAccount receiverAccount = userAccountService.getById(receiverAccountId);
+    public Transaction sendAccountToAccount(String senderAccountNo, String senderBic, String receiverAccountNo, String receiverBic, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
+        UserAccount senderUserAccount = userAccountService.getByAccountNo(senderAccountNo, senderBic);
+        UserAccount receiverUserAccount = userAccountService.getByAccountNo(receiverAccountNo, receiverBic);
 
-        return createTransaction(senderAccount, receiverAccount, amount);
-
-    }
-
-    public Transaction transferAmongInternalBankAccountsWithIban(long senderAccountId, String iban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
-        UserAccount senderAccount = userAccountService.getById(senderAccountId);
-        UserAccount receiverAccount = userAccountService.getByIban(iban);
-
-        return createTransaction(senderAccount, receiverAccount, amount);
-
-    }
-
-    public Transaction transferAmongInternalBankAccountsWithAccountNo(long senderAccountId, String accountNo, String bank, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
-        UserAccount senderAccount = userAccountService.getById(senderAccountId);
-
-        UserAccount receiverAccount = userAccountService.getByAccountNoAndBankAndCurrency(accountNo, bank, senderAccount.getCurrency());
-
-        return createTransaction(senderAccount, receiverAccount, amount);
-    }
-
-    public Transaction transferAmongExterNalBankAccountsWithIban(long senderAccountId, String iban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
-
-        UserAccount senderUserAccount = userAccountService.getById(senderAccountId);
-        UserAccount receiverUserAccount = userAccountService.getByIban(iban);
-
-
-        /*
-        if(senderUserAccount.getCurrencyId()==receiverUserAccount.getCurrencyId()){
-            Bank senderBank=bankService.getById(senderUserAccount.getBankId());
-            Bank receiverBank=bankService.getById(receiverUserAccount.getBankId());
-
-            BankAccount senderBankAccount = bankAccountService.getByCurrencyIdAndBankId(senderUserAccount.getCurrencyId(),senderBank.getId());
-            BankAccount receiverBankAccount = bankAccountService.getByCurrencyIdAndBankId(receiverUserAccount.getCurrencyId(),receiverBank.getId());
-
-
-            double senderUserAccountTemp= senderBankAccount.getAmount();
-
-            double fee=FeeConstant.get(FeeConstant.EXTERNAL.name()).getRate()*amount;
-
-            senderUserAccount.setAmount(senderUserAccountTemp-amount-fee);
-
-            double senderBankAccountTemp=senderBankAccount.getAmount();
-            senderBankAccount.setAmount(senderBankAccountTemp-amount+fee);
-
-            double receiverUserAccountTemp=receiverUserAccount.getAmount();
-            receiverUserAccount.setAmount(receiverUserAccountTemp+amount);
-
-
-            double receiverBankAccountTemp=receiverBankAccount.getAmount();
-            receiverBankAccount.setAmount(receiverBankAccountTemp-amount);
-        }else{
-            //SEND EURO TO TL DIFFERENT  CUSTOMERS ACCOUNTS CURRENCY EXCHANGE
-            Currency senderCurrency = currencyService.getById(senderUserAccount.getCurrencyId());
-            Currency receiverCurrency = currencyService.getById(receiverUserAccount.getCurrencyId());
-
-            //EURO
-            BankAccount senderBankAccount = bankAccountService.getByCurrencyIdAndBankId(senderUserAccount.getCurrencyId(), senderUserAccount.getBankId());
-
-            //TL
-            BankAccount receiverBankAccount = bankAccountService.getByCurrencyIdAndBankId(receiverUserAccount.getCurrencyId(), receiverUserAccount.getBankId());
-
-            //specify fee
-            double feeAmount = amount * FeeConstant.get(senderCurrency.getShrtCode()+"_"+receiverCurrency.getShrtCode()).getRate();
-
-            //extract fee from amount and exhange amount
-            double exchangeAmount = (amount-feeAmount) * RateConstant.get(senderCurrency.getShrtCode() +"_"+ receiverCurrency.getShrtCode()).getRate();
-
-            //add exhange to user exhanged money account
-            double tempReceiverAmount = receiverUserAccount.getAmount();
-            receiverUserAccount.setAmount(tempReceiverAmount + exchangeAmount);
-
-
-            //extract exchange to bank money account
-            double tempReceiverBankAmount = receiverBankAccount.getAmount();
-            receiverBankAccount.setAmount(tempReceiverBankAmount-exchangeAmount);
-
-            //extract orjinal amount from sender Account
-            double tempSenderAmount = senderUserAccount.getAmount();
-            senderUserAccount.setAmount(tempSenderAmount - (amount));
-
-            //add orjinal amount to bankAccount
-            double tempSenderBankAmount = senderBankAccount.getAmount();
-            senderBankAccount.setAmount(tempSenderBankAmount + amount);
-
-            bankAccountService.update(senderBankAccount);
-            bankAccountService.update(receiverBankAccount);
-            userAccountService.update(senderUserAccount);
-            userAccountService.update(receiverUserAccount);
-        }
-        */
         return createTransaction(senderUserAccount, receiverUserAccount, amount);
     }
 
-    public Transaction transferAmongExterNalBankAccountsWithAccountNo(long senderAccountId, String accountNo, String bank, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
-        UserAccount senderUserAccount = userAccountService.getById(senderAccountId);
-        UserAccount receiverUserAccount = userAccountService.getByAccountNo(accountNo, bank);
+    @Override
+    public Transaction sendAccountToIban(String senderAccountNo, String senderBic, String receiverIban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
+        UserAccount senderUserAccount = userAccountService.getByAccountNo(senderAccountNo, senderBic);
+        UserAccount receiverUserAccount = userAccountService.getByIban(receiverIban);
+
+        return createTransaction(senderUserAccount, receiverUserAccount, amount);
+    }
+
+    @Override
+    public Transaction sendIbanToAccount(String senderIban, String receiverAccountNo, String receiverBic, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
+        UserAccount senderUserAccount = userAccountService.getByIban(senderIban);
+        UserAccount receiverUserAccount = userAccountService.getByAccountNo(receiverAccountNo, receiverBic);
+
+        return createTransaction(senderUserAccount, receiverUserAccount, amount);
+    }
+
+    @Override
+    public Transaction sendIbanToIban(String senderIban, String receiverIban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException {
+        UserAccount senderUserAccount = userAccountService.getByIban(senderIban);
+        UserAccount receiverUserAccount = userAccountService.getByIban(receiverIban);
 
         return createTransaction(senderUserAccount, receiverUserAccount, amount);
     }

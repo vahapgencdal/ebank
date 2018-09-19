@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class TransactionThreadPoolExecuterImpl implements TransactionThreadPoolExecuter {
 
     private TransactionService transactionService;
-    private static ScheduledExecutorService scheduledPoolService = Executors.newScheduledThreadPool(4);
+    private static ScheduledExecutorService scheduledPoolService = Executors.newScheduledThreadPool(1);
 
     @Inject
     public TransactionThreadPoolExecuterImpl(TransactionService transactionService) {

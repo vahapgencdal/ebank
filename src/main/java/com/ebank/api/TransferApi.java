@@ -1,9 +1,10 @@
 package com.ebank.api;
 
 import com.ebank.model.entity.Transaction;
-import com.ebank.model.exception.InsufficientBalanceException;
-import com.ebank.model.exception.WrongBalanceTypeException;
-import com.ebank.model.request.*;
+import com.ebank.model.request.newfolder.AccountToAccountRequest;
+import com.ebank.model.request.newfolder.AccountToIbanRequest;
+import com.ebank.model.request.newfolder.IbanToAccountRequest;
+import com.ebank.model.request.newfolder.IbanToIbanRequest;
 import com.ebank.model.service.TransferService;
 import com.google.inject.Inject;
 
@@ -29,44 +30,56 @@ public class TransferApi {
         this.transferService = transferService;
     }
 
+
     @POST
-    @Path("internal/among")
+    @Path("accountToAccount")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction transferAmongItsAccounts(AmongTransferItsAccountsRequest request) throws InsufficientBalanceException, WrongBalanceTypeException {
-        return transferService.transferAmongItsAccounts(request.getSenderAccountId(), request.getReceiverAccountId(), request.getAmount());
+    public Response<Transaction> sendAccountToAccount(AccountToAccountRequest request) {
+        try {
+            Transaction tr = transferService.sendAccountToAccount(request.getSenderAccountNo(), request.getSenderBic(), request.getReceiverAccountNo(), request.getReceiverBic(), request.getAmount());
+            return Response.of(tr, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @POST
-    @Path("internal/iban")
+    @Path("accountToIban")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction transferAmongInternalBankAccountsWithIban(InternalTransferWithIbanRequest request) throws InsufficientBalanceException, WrongBalanceTypeException {
-        return transferService.transferAmongInternalBankAccountsWithIban(request.getSenderAccountId(), request.getIban(), request.getAmount());
+    public Response<Transaction> sendAccountToIban(AccountToIbanRequest request) {
+        try {
+            Transaction tr = transferService.sendAccountToIban(request.getSenderAccountNo(), request.getSenderBic(), request.getReceiverIban(), request.getAmount());
+            return Response.of(tr, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @POST
-    @Path("internal/account")
+    @Path("ibanToIban")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction transferAmongInternalBankAccountsWithAccountNo(InternalTransferWithAccountNoTransferRequest request) throws InsufficientBalanceException, WrongBalanceTypeException {
-        return transferService.transferAmongInternalBankAccountsWithAccountNo(request.getSenderAccountId(), request.getAccountNo(), request.getBic(), request.getAmount());
+    public Response<Transaction> sendIbanToIban(IbanToIbanRequest request) {
+        try {
+            Transaction tr = transferService.sendIbanToIban(request.getSenderIban(), request.getReceiverIban(), request.getAmount());
+            return Response.of(tr, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
-
     @POST
-    @Path("external/iban")
+    @Path("ibanToAccount")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction transferAmongExterNalBankAccountsWithIban(ExternalTransferWithIbanRequest request) throws InsufficientBalanceException, WrongBalanceTypeException {
-        return transferService.transferAmongExterNalBankAccountsWithIban(request.getSenderAccountId(), request.getIban(), request.getAmount());
-    }
-
-    @POST
-    @Path("external/account")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Transaction transferAmongExterNalBankAccountsWithAccountNo(ExternalTransferWithAccountNoRequest request) throws InsufficientBalanceException, WrongBalanceTypeException {
-        return transferService.transferAmongExterNalBankAccountsWithAccountNo(request.getSenderAccountId(), request.getAccountNo(), request.getBic(), request.getAmount());
+    public Response<Transaction> sendIbanToAccount(IbanToAccountRequest request) {
+        try {
+            Transaction tr = transferService.sendIbanToAccount(request.getSenderIban(), request.getReceiverAccountNo(), request.getReceiverBic(), request.getAmount());
+            return Response.of(tr, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
 }

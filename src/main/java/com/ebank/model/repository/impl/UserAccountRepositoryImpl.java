@@ -19,7 +19,6 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
 
 
     public UserAccount getById(long id) {
-
         return DataSource.userAccounts.parallelStream().filter(account -> account.getId() == id).findAny().orElse(new UserAccount());
     }
 

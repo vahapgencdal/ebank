@@ -12,15 +12,12 @@ import com.ebank.model.exception.WrongBalanceTypeException;
  */
 public interface TransferService {
 
-    Transaction transferAmongItsAccounts(long senderAccountId, long receiverAccountId, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
+    Transaction sendAccountToAccount(String senderAccountNo, String senderBic, String receiverAccountNo, String receiverBic, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
 
-    Transaction transferAmongInternalBankAccountsWithIban(long senderAccountId, String iban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
+    Transaction sendAccountToIban(String senderAccountNo, String senderBic, String receiverIban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
 
-    Transaction transferAmongInternalBankAccountsWithAccountNo(long senderAccountId, String accountNo, String bic, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
+    Transaction sendIbanToAccount(String senderIban, String receiverAccountNo, String receiverBic, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
 
-    Transaction transferAmongExterNalBankAccountsWithIban(long senderAccountId, String iban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
-
-
-    Transaction transferAmongExterNalBankAccountsWithAccountNo(long senderAccountId, String accountNo, String bic, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
+    Transaction sendIbanToIban(String senderIban, String receiverIban, double amount) throws InsufficientBalanceException, WrongBalanceTypeException;
 
 }

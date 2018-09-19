@@ -192,13 +192,13 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
             UserAccount senderAccount = userAccountRepository.getById(transaction.getSenderAccountId());
             UserAccount receiverAccount = userAccountRepository.getById(transaction.getReceiverAccountId());
 
-            double senderAmount = senderAccount.getTotalAmount() - transaction.getAmount() - transaction.getFee() * transaction.getAmount();
+            double senderAmount = (senderAccount.getTotalAmount() - transaction.getAmount()) - transaction.getFee() * transaction.getAmount();
             senderAccount.setTotalAmount(senderAmount);
             double senderBlockedAmount = senderAccount.getBlockedAmount() - transaction.getAmount() - transaction.getFee() * transaction.getAmount();
             senderAccount.setBlockedAmount(senderBlockedAmount);
 
             double receiverAmount = receiverAccount.getTotalAmount() + transaction.getAmount();
-            senderAccount.setTotalAmount(receiverAmount);
+            receiverAccount.setTotalAmount(receiverAmount);
 
             userAccountRepository.update(senderAccount);
             userAccountRepository.update(receiverAccount);
@@ -212,6 +212,7 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
 
     public boolean sendMoneyAmongUserAccounts(Transaction transaction) {
         try {
+            //DataSource.userAccounts
             sendMoneyAmongAccounts(transaction);
             BankAccount senderBankAccount = bankAccountRepository.getByCurrencyAndBank(transaction.getSenderCurrency(), transaction.getSenderBank());
 

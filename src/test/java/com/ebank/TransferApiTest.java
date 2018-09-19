@@ -3,20 +3,14 @@ package com.ebank;
 import com.ebank.mock.AccountMockCreater;
 import com.ebank.model.entity.Account;
 import com.ebank.model.entity.UserAccount;
-import com.ebank.model.request.*;
 import com.ebank.util.AccountTypeEnum;
 import com.ebank.util.BankEnum;
 import com.ebank.util.CurrencyEnum;
 import com.ebank.util.UserEnum;
 import com.sun.jersey.api.client.ClientResponse;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 
 /**
  * @author Vahap Gencdal
@@ -130,7 +124,7 @@ public class TransferApiTest extends BaseApiTest {
         }
         return 0;
     }
-
+/*
     @Test
     public void transferAmongItsAccounts() throws JSONException, IOException {
         this.initializeTest();
@@ -230,5 +224,5 @@ public class TransferApiTest extends BaseApiTest {
         JSONArray jsonArray = new JSONArray(actual);
         Assert.assertTrue(jsonArray.length() > 0);
     }
-
+*/
 }

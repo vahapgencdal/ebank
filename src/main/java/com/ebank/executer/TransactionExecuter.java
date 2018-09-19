@@ -26,17 +26,18 @@ public class TransactionExecuter implements Runnable {
 
     @Override
     public void run() {
+        //  DataSource.userAccounts
         try {
             Transaction transaction = transactionService.getAnyPendingTransaction();
-            String message;
-            if (transaction != null) {
+            String message = "";
+            if (transaction != null && TransactionStatus.PENDING.toString().equals(transaction.getStatus())) {
                 Transaction completed = transactionService.complete(transaction);
                 if (completed != null && completed.getStatus().equals(TransactionStatus.COMPLETED.toString())) {
                     message = "OKEY: " + completed.toString() + " : " + LocalDateTime.now();
                 } else {
                     message = "ERROR: " + transaction.toString() + " : " + LocalDateTime.now();
                 }
-            } else {
+            } else if (transaction == null) {
                 message = "NOT FIND ANY PENDING TRANSACTION AT: " + LocalDateTime.now();
             }
             Logger.getLogger(TransactionExecuter.class.getName()).log(Level.INFO, message);
