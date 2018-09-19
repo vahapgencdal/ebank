@@ -1,6 +1,5 @@
 package com.ebank.model.repository.impl;
 
-import com.ebank.datasource.DataSource;
 import com.ebank.executer.TransactionThreadPoolExecuterImpl;
 import com.ebank.model.entity.BankAccount;
 import com.ebank.model.entity.Transaction;
@@ -15,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +29,10 @@ import java.util.logging.Logger;
 @Singleton
 public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> implements TransactionRepository {
 
+    private List<Transaction> transactions;
+
+
+
     private final BankAccountRepository bankAccountRepository;
     private final UserAccountRepository userAccountRepository;
     private static final Logger LOGGER = Logger.getLogger(TransactionThreadPoolExecuterImpl.class.getName());
@@ -37,20 +41,21 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
     public TransactionRepositoryImpl(BankAccountRepository bankAccountRepository, UserAccountRepository userAccountRepository) {
         this.bankAccountRepository = bankAccountRepository;
         this.userAccountRepository = userAccountRepository;
+        transactions = new ArrayList<>();
     }
 
     public Transaction getById(long id) {
-        return DataSource.transactions.parallelStream().filter(transaction -> transaction.getId() == id).findAny().orElse(new Transaction());
+        return this.transactions.parallelStream().filter(transaction -> transaction.getId() == id).findAny().orElse(new Transaction());
     }
 
     public List<Transaction> getAll() {
-        return DataSource.transactions;
+        return this.transactions;
     }
 
     @Override
     public Transaction create(Transaction transaction) {
         transaction.setId(getCurrentMaxId() + 1);
-        DataSource.transactions.add(transaction);
+        this.transactions.add(transaction);
         return transaction;
     }
 
@@ -64,29 +69,29 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
     @Override
     public void remove(long id) {
         Transaction byId = this.getById(id);
-        DataSource.transactions.remove(byId);
+        this.transactions.remove(byId);
     }
 
     @Override
     public int getSize() {
-        return DataSource.transactions.size();
+        return this.transactions.size();
     }
 
     private long getCurrentMaxId() {
-        if (DataSource.transactions.isEmpty()) return 0;
+        if (this.transactions.isEmpty()) return 0;
         Ordering<Transaction> ordering = new Ordering<Transaction>() {
             @Override
             public int compare(Transaction left, Transaction right) {
                 return Long.compare(left.getId(), right.getId());
             }
         };
-        return ordering.max(DataSource.transactions).getId();
+        return ordering.max(this.transactions).getId();
     }
 
     @Override
     public Transaction getAnyPendingTransaction() {
-        if (!DataSource.transactions.isEmpty())
-            return DataSource.transactions.parallelStream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.PENDING.toString())).findAny().orElse(null);
+        if (!this.transactions.isEmpty())
+            return this.transactions.parallelStream().filter(transaction -> transaction.getStatus().equals(TransactionStatus.PENDING.toString())).findAny().orElse(null);
         return null;
     }
 

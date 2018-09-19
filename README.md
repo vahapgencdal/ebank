@@ -7,8 +7,24 @@ execute `mvn clean install` under ebank directory.
 ###2.  start application
 execute `tomcat7:run` under ebank directory
 
-###3.  add accounts from console
-1. execute below scripts for bank-accounts
+###4. Start Transaction Executer Job Service.
+```
+curl -X GET \
+  http://localhost:8080/api/jobs/start \
+  -H 'Cache-Control: no-cache' \
+  -H 'Postman-Token: 38ab5aa8-dfa6-404f-a3df-29e294493ea5'
+```
+- for stop service
+```
+curl -X GET \
+  http://localhost:8080/api/jobs/stop \
+  -H 'Cache-Control: no-cache' \
+  -H 'Postman-Token: f551fb42-f15a-46e6-b2b7-76333fd64524'
+```
+
+###5.  add accounts from console
+1. execute below scripts for bank-accounts  
+
 ```
 curl -X POST \
   http://localhost:8080/api/accounts/banks \
@@ -26,7 +42,9 @@ curl -X POST \
     "defaultAccount":true,
     "bank":"IS"
 }'
-
+```
+----
+```
 
 curl -X POST \
   http://localhost:8080/api/accounts/banks \
@@ -44,6 +62,9 @@ curl -X POST \
     "defaultAccount":true,
     "bank":"IS"
 }'
+```
+----
+```
 
 curl -X POST \
   http://localhost:8080/api/accounts/banks \
@@ -61,7 +82,9 @@ curl -X POST \
     "defaultAccount":true,
     "bank":"IS"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/banks \
   -H 'Cache-Control: no-cache' \
@@ -78,7 +101,9 @@ curl -X POST \
     "defaultAccount":true,
     "bank":"GARAN"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/banks \
   -H 'Cache-Control: no-cache' \
@@ -95,7 +120,9 @@ curl -X POST \
     "defaultAccount":true,
     "bank":"GARAN"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/banks \
   -H 'Cache-Control: no-cache' \
@@ -113,7 +140,7 @@ curl -X POST \
     "bank":"GARAN"
 }'
 ```
-2. You must add any user for money transfer
+2. execute below scripts for dummy user-accounts  
 ```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
@@ -125,13 +152,15 @@ curl -X POST \
     "name":"Vahap Drawing TL Account",
     "accountNo":"123456",
     "iban":"1234-4321-3456-6543-12",
-    "totalAmount":1000,
+    "totalAmount":1000000,
     "blockedAmount":0,
     "currency":"TL",
     "defaultAccount":true,
     "bank":"GARAN"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
   -H 'Cache-Control: no-cache' \
@@ -142,13 +171,15 @@ curl -X POST \
     "name":"Vahap Drawing Usd Account",
     "accountNo":"123457",
     "iban":"1234-4321-3456-6543-13",
-    "totalAmount":1000,
+    "totalAmount":1000000,
     "blockedAmount":0,
     "currency":"USD",
     "defaultAccount":true,
     "bank":"GARAN"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
   -H 'Cache-Control: no-cache' \
@@ -159,13 +190,15 @@ curl -X POST \
     "name":"Vahap Drawing Euro Account",
     "accountNo":"123458",
     "iban":"1234-4321-3456-6543-14",
-    "totalAmount":1000,
+    "totalAmount":1000000,
     "blockedAmount":0,
     "currency":"EURO",
     "defaultAccount":true,
     "bank":"GARAN"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
   -H 'Cache-Control: no-cache' \
@@ -176,14 +209,16 @@ curl -X POST \
     "name":"Vahap Drawing TL Account",
     "accountNo":"123876",
     "iban":"1234-2367-3456-6543-89",
-    "totalAmount":1000,
+    "totalAmount":1000000,
     "blockedAmount":0,
     "currency":"TL",
     "defaultAccount":true,
     "bank":"IS",
     "user":"VAHAP"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
   -H 'Cache-Control: no-cache' \
@@ -194,14 +229,16 @@ curl -X POST \
     "name":"Emre Drawing TL Account",
     "accountNo":"123458",
     "iban":"1234-4321-3456-6543-89",
-    "totalAmount":1000,
+    "totalAmount":1000000,
     "blockedAmount":0,
     "currency":"TL",
     "defaultAccount":true,
     "bank":"IS",
     "user":"EMRE"
 }'
-
+```
+----
+```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
   -H 'Cache-Control: no-cache' \
@@ -212,7 +249,7 @@ curl -X POST \
     "name":"Emre Drawing TL Second Account",
     "accountNo":"1234458",
     "iban":"1234-4321-3456-3433-99",
-    "totalAmount":1000,
+    "totalAmount":1000000,
     "blockedAmount":0,
     "currency":"TL",
     "defaultAccount":true,
@@ -220,3 +257,218 @@ curl -X POST \
     "user":"EMRE"
 }'
 ```
+3. Transfer moneys All Posibilities example
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 45dcc893-a4c2-4cb0-b554-3a695a2a221c' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverAccountNo":"1234458",
+	 "senderBic":"IS",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 28f2af75-3f82-4713-bb1c-de53acedb786' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverAccountNo":"123456",
+	 "senderBic":"IS",
+	 "receiverBic":"GARAN",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 5aaabbd6-c314-489e-9d39-86db75b69361' \
+  -d '{
+	 "receiverAccountNo":"123458",
+	 "senderAccountNo":"123456",
+	 "senderBic":"GARAN",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: d48ae70e-02d6-4a02-9933-d5613d25b841' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "senderBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 7d7ca23a-d401-4565-b896-a26cf755a327' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverIban":"1234-2367-3456-6543-89",
+	 "senderBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: fe5c89b6-3f7c-45fc-88aa-b11c4dc78465' \
+  -d '{
+	 "senderAccountNo":"123456",
+	 "receiverIban":"1234-4321-3456-6543-89",
+	 "senderBic":"GARAN",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: d5689b76-63df-4005-8e82-6674e541e928' \
+  -d '{
+	 "receiverAccountNo":"123458",
+	 "senderIban":"1234-4321-3456-3433-99",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 27ea21fd-cb8e-47d0-a056-b0f1fb37c6ed' \
+  -d '{
+	 "receiverAccountNo":"123458",
+	 "senderIban":"1234-2367-3456-6543-89",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 6caf0246-f7ca-4103-b2b1-d290c28cfc29' \
+  -d '{
+	"senderIban":"1234-4321-3456-6543-12",
+	 "receiverAccountNo":"123458",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 93b3f110-406b-42c1-b89a-406a93b0c62f' \
+  -d '{
+	 "senderIban":"1234-4321-3456-6543-89",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: e97ef2b5-22e8-4ddf-9aa3-27f439df7cd7' \
+  -d '{
+	 "senderIban":"1234-2367-3456-6543-89",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "amount":300
+}'
+```
+----
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: a3ceb243-1d89-470d-8966-c0f3bc7bcfb2' \
+  -d '{
+	 "senderIban":"1234-4321-3456-6543-12",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "amount":300
+}'
+```
+###6. Last Step Do Some Transfer among users. 
+1. Transfer between over AccountNo to AccountNo with Same User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 63b85069-400d-4e1f-9b13-2534c80c2b0f' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverAccountNo":"1234458",
+	 "senderBic":"IS",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+2. Transfer between over AccountNo to AccountNo with Different User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 776e6bc1-e880-481a-9c6f-ece5a02a6f6e' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverAccountNo":"123456",
+	 "senderBic":"IS",
+	 "receiverBic":"GARAN",
+	 "amount":300
+}'
+```
+3. Transfer between over AccountNo to AccountNo with Different User Different Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: be3cd384-05b7-4e57-8c69-13dda5077174' \
+  -d '{
+	 "receiverAccountNo":"123458",
+	 "senderAccountNo":"123456",
+	 "senderBic":"GARAN",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+you will see transacion logs in console.

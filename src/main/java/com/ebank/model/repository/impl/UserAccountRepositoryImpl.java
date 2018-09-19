@@ -1,11 +1,11 @@
 package com.ebank.model.repository.impl;
 
-import com.ebank.datasource.DataSource;
 import com.ebank.model.entity.UserAccount;
 import com.ebank.model.repository.UserAccountRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,19 +17,24 @@ import java.util.List;
 @Singleton
 public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> implements UserAccountRepository {
 
+    private List<UserAccount> userAccounts;
+
+    public UserAccountRepositoryImpl() {
+        userAccounts = new ArrayList<>();
+    }
 
     public UserAccount getById(long id) {
-        return DataSource.userAccounts.parallelStream().filter(account -> account.getId() == id).findAny().orElse(new UserAccount());
+        return this.userAccounts.parallelStream().filter(account -> account.getId() == id).findAny().orElse(new UserAccount());
     }
 
     public List<UserAccount> getAll() {
-        return DataSource.userAccounts;
+        return this.userAccounts;
     }
 
     @Override
     public UserAccount create(UserAccount account) {
         account.setId(getCurrentMaxId() + 1);
-        DataSource.userAccounts.add(account);
+        this.userAccounts.add(account);
         return account;
     }
 
@@ -46,46 +51,46 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
     @Override
     public void remove(long id) {
         UserAccount byId = this.getById(id);
-        DataSource.userAccounts.remove(byId);
+        this.userAccounts.remove(byId);
     }
 
     @Override
     public int getSize() {
-        return DataSource.userAccounts.size();
+        return this.userAccounts.size();
     }
 
     private long getCurrentMaxId() {
-        if (DataSource.userAccounts.isEmpty()) return 0;
+        if (this.userAccounts.isEmpty()) return 0;
         Ordering<UserAccount> ordering = new Ordering<UserAccount>() {
             @Override
             public int compare(UserAccount left, UserAccount right) {
                 return Long.compare(left.getId(), right.getId());
             }
         };
-        return ordering.max(DataSource.userAccounts).getId();
+        return ordering.max(this.userAccounts).getId();
     }
 
     @Override
     public UserAccount getByAccountType(String accountType) {
-        return DataSource.userAccounts.parallelStream().filter(account -> account.getType().equals(accountType)).findAny().orElse(null);
+        return this.userAccounts.parallelStream().filter(account -> account.getType().equals(accountType)).findAny().orElse(null);
     }
 
     @Override
     public UserAccount getByIban(String iban) {
-        return DataSource.userAccounts.parallelStream().filter(account -> account.getIban().equals(iban)).findAny().orElse(null);
+        return this.userAccounts.parallelStream().filter(account -> account.getIban().equals(iban)).findAny().orElse(null);
     }
 
     @Override
     public UserAccount getByAccountNo(String accountNo, String bank) {
-        return DataSource.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
+        return this.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
     @Override
     public UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency) {
-        UserAccount userAccount = DataSource.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank) && account.getCurrency().equals(currency)).findAny().orElse(null);
+        UserAccount userAccount = this.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank) && account.getCurrency().equals(currency)).findAny().orElse(null);
 
         if (userAccount == null)
-            return DataSource.userAccounts.parallelStream().filter(account -> account.isDefaultAccount()).findAny().orElse(null);
+            return this.userAccounts.parallelStream().filter(account -> account.isDefaultAccount()).findAny().orElse(null);
         else return userAccount;
     }
 

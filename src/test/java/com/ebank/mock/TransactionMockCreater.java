@@ -12,7 +12,7 @@ import com.ebank.util.TransactionStatus;
  */
 public class TransactionMockCreater {
 
-    public Transaction getTest(UserAccount senderAccount, UserAccount receiverAccount, double amount, double feeRate) {
+    public static Transaction getTest(UserAccount senderAccount, UserAccount receiverAccount, double amount, double feeRate) {
 
         Transaction transaction = new Transaction();
         transaction.setSenderIban(senderAccount.getIban());

@@ -1,11 +1,11 @@
 package com.ebank.model.repository.impl;
 
-import com.ebank.datasource.DataSource;
 import com.ebank.model.entity.BankAccount;
 import com.ebank.model.repository.BankAccountRepository;
 import com.google.common.collect.Ordering;
 import com.google.inject.Singleton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,20 +17,25 @@ import java.util.List;
 @Singleton
 public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> implements BankAccountRepository {
 
+    private List<BankAccount> bankAccounts;
+
+    public BankAccountRepositoryImpl() {
+        this.bankAccounts = new ArrayList<>();
+    }
 
     public BankAccount getById(long id) {
 
-        return DataSource.bankAccounts.parallelStream().filter(account -> account.getId() == id).findAny().orElse(new BankAccount());
+        return this.bankAccounts.parallelStream().filter(account -> account.getId() == id).findAny().orElse(new BankAccount());
     }
 
     public List<BankAccount> getAll() {
-        return DataSource.bankAccounts;
+        return this.bankAccounts;
     }
 
     @Override
     public BankAccount create(BankAccount account) {
         account.setId(getCurrentMaxId() + 1);
-        DataSource.bankAccounts.add(account);
+        this.bankAccounts.add(account);
         return account;
     }
 
@@ -46,40 +51,40 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
     @Override
     public void remove(long id) {
         BankAccount byId = this.getById(id);
-        DataSource.bankAccounts.remove(byId);
+        this.bankAccounts.remove(byId);
     }
 
     @Override
     public int getSize() {
-        return DataSource.bankAccounts.size();
+        return this.bankAccounts.size();
     }
 
 
     private long getCurrentMaxId() {
-        if (DataSource.bankAccounts.isEmpty()) return 0;
+        if (this.bankAccounts.isEmpty()) return 0;
         Ordering<BankAccount> ordering = new Ordering<BankAccount>() {
             @Override
             public int compare(BankAccount left, BankAccount right) {
                 return Long.compare(left.getId(), right.getId());
             }
         };
-        return ordering.max(DataSource.bankAccounts).getId();
+        return ordering.max(this.bankAccounts).getId();
     }
 
 
     @Override
     public BankAccount getByIban(String iban) {
-        return DataSource.bankAccounts.parallelStream().filter(account -> account.getIban().equals(iban)).findAny().orElse(null);
+        return this.bankAccounts.parallelStream().filter(account -> account.getIban().equals(iban)).findAny().orElse(null);
     }
 
     @Override
     public BankAccount getByAccountNo(String accountNo, String bank) {
-        return DataSource.bankAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
+        return this.bankAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
     @Override
     public BankAccount getByCurrencyAndBank(String currency, String bank) {
-        return DataSource.bankAccounts.parallelStream().filter(account -> account.getCurrency().equals(currency) && account.getBank().equals(bank)).findAny().orElse(null);
+        return this.bankAccounts.parallelStream().filter(account -> account.getCurrency().equals(currency) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
 

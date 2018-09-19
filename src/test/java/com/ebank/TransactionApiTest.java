@@ -1,7 +1,18 @@
 package com.ebank;
 
+import com.ebank.mock.AccountMockCreater;
+import com.ebank.mock.TransactionMockCreater;
 import com.ebank.model.entity.Transaction;
+import com.ebank.model.entity.UserAccount;
+import com.ebank.util.AccountTypeEnum;
+import com.ebank.util.BankEnum;
+import com.ebank.util.CurrencyEnum;
+import com.ebank.util.UserEnum;
 import com.sun.jersey.api.client.ClientResponse;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 
@@ -17,17 +28,26 @@ public class TransactionApiTest extends BaseApiTest {
         super();
     }
 
-    public ClientResponse insert(Transaction transaction) throws Exception {
+    public ClientResponse insert() throws Exception {
+        UserAccount vahapAcc = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000);
+        UserAccount emreAcc = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000);
+        Transaction transaction = TransactionMockCreater.getTest(vahapAcc, emreAcc, 100, 0.2);
         String content = json(transaction);
         ClientResponse resp = webService.path("api").path("transactions").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
         return resp;
     }
-    /*
+
+
+    @Test
+    public void create() throws Exception {
+        ClientResponse response = insert();
+        JSONObject js = new JSONObject(response.getEntity(String.class));
+        Assert.assertNotNull(js);
+    }
 
     @Test
     public void get() throws Exception {
-        ClientResponse response = insert(TransactionMockCreater.getTest());
-
+        ClientResponse response = insert();
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
         ClientResponse respGet = webService.path("api").path("transactions/" + js.getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -38,38 +58,21 @@ public class TransactionApiTest extends BaseApiTest {
 
     @Test
     public void update() throws Exception {
-        ClientResponse response = insert(TransactionMockCreater.getTest());
-
+        ClientResponse response = insert();
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
         ClientResponse resp = webService.path("api").path("transactions/" + js.getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js.put("status", "COMPLETED"));
-
         JSONObject jsUpdate = new JSONObject(resp.getEntity(String.class));
-
         Assert.assertEquals("COMPLETED", jsUpdate.getString("status"));
-    }
-
-
-    @Test
-    public void getSize() throws Exception {
-        insert(TransactionMockCreater.getTest());
-
-        insert(TransactionMockCreater.getTest());
-
-        insert(TransactionMockCreater.getTest());
-
-        ClientResponse resp = webService.path("api").path("transactions/size").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        String actual = resp.getEntity(String.class);
-        Assert.assertEquals(6, Integer.parseInt(actual));
     }
 
     @Test
     public void getAll() throws Exception {
-        insert(TransactionMockCreater.getTest());
+        insert();
         ClientResponse resp = webService.path("api").path("transactions").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         String actual = resp.getEntity(String.class);
         JSONArray jsonArray = new JSONArray(actual);
         Assert.assertTrue(jsonArray.length() > 0);
     }
-    */
+
 }
