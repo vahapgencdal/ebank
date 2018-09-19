@@ -1,13 +1,13 @@
 # ebank
 Online money Transfer between Accounts
 
-###1. install dependencies
+### 1. install dependencies
 execute `mvn clean install` under ebank directory.
 
-###2.  start application
+### 2.  start application
 execute `tomcat7:run` under ebank directory
 
-###4. Start Transaction Executer Job Service.
+### 3. Start Transaction Executer Job Service.
 ```
 curl -X GET \
   http://localhost:8080/api/jobs/start \
@@ -22,7 +22,7 @@ curl -X GET \
   -H 'Postman-Token: f551fb42-f15a-46e6-b2b7-76333fd64524'
 ```
 
-###5.  add accounts from console
+### 4.  add accounts from console
 1. execute below scripts for bank-accounts  
 
 ```
@@ -425,7 +425,7 @@ curl -X POST \
 	 "amount":300
 }'
 ```
-###6. Last Step Do Some Transfer among users. 
+### 5. Last Step Do Some Transfer among users. 
 1. Transfer between over AccountNo to AccountNo with Same User Same Bank
 ```
 curl -X POST \
