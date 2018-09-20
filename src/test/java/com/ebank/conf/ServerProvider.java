@@ -72,11 +72,6 @@ public class ServerProvider {
         ResourceConfig rc = new PackagesResourceConfig("com.ebank.api");
         IoCComponentProviderFactory ioc = new GuiceComponentProviderFactory(rc, injector);
         server = GrizzlyServerFactory.createHttpServer(BASE_URI + "api/", rc, ioc);
-
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapi/application.wadl\n" +
-                        "Hit enter to stop it...",
-                BASE_URI));
     }
 
     public void stop() {

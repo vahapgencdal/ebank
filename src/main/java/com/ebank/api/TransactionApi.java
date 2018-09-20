@@ -25,44 +25,77 @@ public class TransactionApi {
     }
 
     @GET
-    @Path("size")
     @Produces(MediaType.APPLICATION_JSON)
-    public int getSize() {
-        return transactionService.getSize();
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Transaction> getAll() {
-        return transactionService.getAll();
+    public Response<List<Transaction>> getAll() {
+        try {
+            List<Transaction> updated = transactionService.getAll();
+            return Response.of(updated, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction getById(@PathParam("id") long id) {
-        return transactionService.getById(id);
+    public Response<Transaction> getById(@PathParam("id") long id) {
+        try {
+            Transaction updated = transactionService.getById(id);
+            return Response.of(updated, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction create(Transaction transaction) {
-        return transactionService.create(transaction);
+    public Response<Transaction> create(Transaction transaction) {
+        try {
+            Transaction updated = transactionService.create(transaction);
+            return Response.of(updated, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Transaction update(Transaction transaction) {
-        return transactionService.update(transaction);
+    public Response<Transaction> update(Transaction transaction) {
+        try {
+            Transaction updated = transactionService.update(transaction);
+            return Response.of(updated, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
+
     }
 
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void remove(@PathParam("id") long id) {
-        transactionService.remove(id);
+    public Response<Object> remove(@PathParam("id") long id) {
+        try {
+            transactionService.remove(id);
+            return Response.of(null, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
+
+    @GET
+    @Path("complete")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Boolean> completeTransaction() {
+        try {
+            boolean result = transactionService.completeTransaction();
+            return Response.of(result, "", "OK");
+        } catch (Exception e) {
+            return Response.of(false, e.getMessage(), "NOK");
+        }
+
+    }
+
 }

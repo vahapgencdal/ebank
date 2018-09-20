@@ -87,16 +87,27 @@ public class TransferApiTest extends BaseApiTest {
             String content = json(account);
             ClientResponse resp = webService.path("api").path("accounts" + "/" + path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
             JSONObject js = new JSONObject(resp.getEntity(String.class));
-            return js.getLong("id");
+            return js.getJSONObject("data").getLong("id");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
     }
 
+    private JSONObject getAccount(String accountNo, String bic, String path) throws JSONException {
+        ClientResponse respGet = webService.path("api").path("accounts/" + path + "/account/" + accountNo + "/" + bic).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        return new JSONObject(respGet.getEntity(String.class));
+    }
+
+    private JSONObject complete() throws JSONException {
+        ClientResponse respGet = webService.path("api").path("transactions/complete").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        return new JSONObject(respGet.getEntity(String.class));
+    }
+
     @Test
     public void AccountsToAccountSameUserSameBank() throws JSONException, IOException {
         this.initializeTest();
+
 
         AccountToAccountRequest request = new AccountToAccountRequest();
         request.setAmount(100);
@@ -105,10 +116,13 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderAccountNo(vhpGaranTlAccountSec.getAccountNo());
         request.setSenderBic(vhpGaranTlAccountSec.getBank());
         String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
+
+        JSONObject complete = complete();
+
+        JSONObject account = getAccount(vhpGaranTlAccountSec.getAccountNo(), vhpGaranTlAccountSec.getBank(), "users");
+        boolean result = vhpGaranTlAccountSec.getTotalAmount() - 100 == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -119,17 +133,21 @@ public class TransferApiTest extends BaseApiTest {
     @Test
     public void AccountsToAccountDifferentUserSameBank() throws JSONException, IOException {
         this.initializeTest();
+
         AccountToAccountRequest request = new AccountToAccountRequest();
-        request.setAmount(140);
+        request.setAmount(200);
         request.setReceiverAccountNo(vhpGaranTlAccount.getAccountNo());
         request.setReceiverBic(vhpGaranTlAccount.getBank());
         request.setSenderAccountNo(emreGaranTlAccount.getAccountNo());
         request.setSenderBic(emreGaranTlAccount.getBank());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(emreGaranTlAccount.getAccountNo(), emreGaranTlAccount.getBank(), "users");
+        double resultAmount = emreGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -148,9 +166,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderBic(emreIsBankTlAccount.getBank());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        JSONObject complete = complete();
+        JSONObject account = getAccount(emreIsBankTlAccount.getAccountNo(), emreIsBankTlAccount.getBank(), "users");
+        double resultAmount = emreIsBankTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -168,9 +189,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderBic(vhpGaranTlAccount.getBank());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/accountToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
+        double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -183,9 +207,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderBic(vhpGaranTlAccount.getBank());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/accountToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
+        double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -198,9 +225,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderBic(vhpGaranTlAccount.getBank());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/accountToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
+        double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -212,9 +242,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderIban(vhpGaranTlAccountSec.getIban());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/ibanToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(vhpGaranTlAccountSec.getAccountNo(), vhpGaranTlAccountSec.getBank(), "users");
+        double resultAmount = vhpGaranTlAccountSec.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -226,9 +259,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderIban(emreIsBankTlAccount.getIban());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/ibanToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(emreIsBankTlAccount.getAccountNo(), emreIsBankTlAccount.getBank(), "users");
+        double resultAmount = emreIsBankTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -240,8 +276,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderIban(emreGaranTlAccount.getIban());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/ibanToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(emreGaranTlAccount.getAccountNo(), emreGaranTlAccount.getBank(), "users");
+        double resultAmount = emreGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -255,9 +295,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderIban(vhpGaranTlAccount.getIban());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/ibanToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
+        double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -271,9 +314,12 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderIban(emreGaranTlAccount.getIban());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/ibanToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(emreGaranTlAccount.getAccountNo(), emreGaranTlAccount.getBank(), "users");
+        double resultAmount = emreGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -287,8 +333,11 @@ public class TransferApiTest extends BaseApiTest {
         request.setSenderIban(emreIsBankTlAccount.getIban());
         String content = json(request);
         ClientResponse resp = webService.path("api").path("transfers/ibanToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject js = new JSONObject(resp.getEntity(String.class));
-        System.out.println(js.toString());
-        Assert.assertTrue(js.getJSONObject("data").getLong("id") > 0);
+        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
+        complete();
+        JSONObject account = getAccount(emreIsBankTlAccount.getAccountNo(), emreIsBankTlAccount.getBank(), "users");
+        double resultAmount = emreIsBankTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 }

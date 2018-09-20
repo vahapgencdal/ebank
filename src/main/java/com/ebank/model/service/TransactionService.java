@@ -14,4 +14,6 @@ public interface TransactionService extends BaseService<Transaction> {
 
     Transaction complete(Transaction transaction);
 
+    boolean completeTransaction();
+
 }

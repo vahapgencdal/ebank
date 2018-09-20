@@ -42,7 +42,7 @@ public class TransactionApiTest extends BaseApiTest {
     public void create() throws Exception {
         ClientResponse response = insert();
         JSONObject js = new JSONObject(response.getEntity(String.class));
-        Assert.assertNotNull(js);
+        Assert.assertNotNull(js.getJSONObject("data"));
     }
 
     @Test
@@ -50,10 +50,9 @@ public class TransactionApiTest extends BaseApiTest {
         ClientResponse response = insert();
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        ClientResponse respGet = webService.path("api").path("transactions/" + js.getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse respGet = webService.path("api").path("transactions/" + js.getJSONObject("data").getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         JSONObject getById = new JSONObject(respGet.getEntity(String.class));
-
-        Assert.assertNotNull(getById);
+        Assert.assertNotNull(getById.getJSONObject("data"));
     }
 
     @Test
@@ -61,17 +60,17 @@ public class TransactionApiTest extends BaseApiTest {
         ClientResponse response = insert();
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        ClientResponse resp = webService.path("api").path("transactions/" + js.getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js.put("status", "COMPLETED"));
+        ClientResponse resp = webService.path("api").path("transactions/" + js.getJSONObject("data").getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js.getJSONObject("data").put("status", "COMPLETED"));
         JSONObject jsUpdate = new JSONObject(resp.getEntity(String.class));
-        Assert.assertEquals("COMPLETED", jsUpdate.getString("status"));
+        Assert.assertEquals("COMPLETED", jsUpdate.getJSONObject("data").getString("status"));
     }
 
     @Test
     public void getAll() throws Exception {
         insert();
         ClientResponse resp = webService.path("api").path("transactions").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        String actual = resp.getEntity(String.class);
-        JSONArray jsonArray = new JSONArray(actual);
+        JSONObject jsUpdate = new JSONObject(resp.getEntity(String.class));
+        JSONArray jsonArray = jsUpdate.getJSONArray("data");
         Assert.assertTrue(jsonArray.length() > 0);
     }
 

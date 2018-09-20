@@ -7,7 +7,6 @@ import com.ebank.util.BankEnum;
 import com.ebank.util.CurrencyEnum;
 import com.ebank.util.UserEnum;
 import com.sun.jersey.api.client.ClientResponse;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -49,7 +48,7 @@ public class AccountApiTest extends BaseApiTest {
         ClientResponse response = insert(AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000), "users");
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        ClientResponse respGet = webService.path("api").path("accounts/users/" + js.getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse respGet = webService.path("api").path("accounts/users/" + js.getJSONObject("data").getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         JSONObject getById = new JSONObject(respGet.getEntity(String.class));
 
         Assert.assertNotNull(getById);
@@ -59,13 +58,13 @@ public class AccountApiTest extends BaseApiTest {
     public void updateUser() throws Exception {
         ClientResponse response = insert(AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000), "users");
         JSONObject js = new JSONObject(response.getEntity(String.class));
-        js.put("name", "XXX");
+        js.getJSONObject("data").put("name", "XXX");
 
-        ClientResponse resp = webService.path("api").path("accounts/users/" + js.getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js);
+        ClientResponse resp = webService.path("api").path("accounts/users/" + js.getJSONObject("data").getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js.getJSONObject("data"));
 
         JSONObject jsUpdate = new JSONObject(resp.getEntity(String.class));
 
-        Assert.assertEquals("XXX", jsUpdate.getString("name"));
+        Assert.assertEquals("XXX", jsUpdate.getJSONObject("data").getString("name"));
     }
 
     @Test
@@ -73,8 +72,8 @@ public class AccountApiTest extends BaseApiTest {
         ClientResponse response = insert(AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Tl Drawing Account", BankEnum.GARAN.getVal(), true, 1000), "users");
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        ClientResponse resp = webService.path("api").path("accounts/users/" + js.getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
-        Assert.assertEquals(204, resp.getStatus());
+        ClientResponse resp = webService.path("api").path("accounts/users/" + js.getJSONObject("data").getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        Assert.assertEquals(200, resp.getStatus());
     }
 
 
@@ -84,8 +83,8 @@ public class AccountApiTest extends BaseApiTest {
 
         ClientResponse resp = webService.path("api").path("accounts/users").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         String actual = resp.getEntity(String.class);
-        JSONArray jsonArray = new JSONArray(actual);
-        Assert.assertTrue(jsonArray.length() > 0);
+        JSONObject jsonObject = new JSONObject(actual);
+        Assert.assertTrue(jsonObject.getJSONArray("data").length() > 0);
     }
 
 
@@ -101,7 +100,18 @@ public class AccountApiTest extends BaseApiTest {
         ClientResponse response = insert(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), true), "banks");
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        ClientResponse respGet = webService.path("api").path("accounts/banks/" + js.getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse respGet = webService.path("api").path("accounts/banks/" + js.getJSONObject("data").getLong("id")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        JSONObject getById = new JSONObject(respGet.getEntity(String.class));
+
+        Assert.assertNotNull(getById);
+    }
+
+    @Test
+    public void getBankAccountByNoAndBic() throws Exception {
+        ClientResponse response = insert(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), true), "banks");
+        JSONObject js = new JSONObject(response.getEntity(String.class));
+
+        ClientResponse respGet = webService.path("api").path("accounts/banks/account/" + js.getJSONObject("data").get("accountNo") + "/" + js.getJSONObject("data").get("bank")).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         JSONObject getById = new JSONObject(respGet.getEntity(String.class));
 
         Assert.assertNotNull(getById);
@@ -111,13 +121,13 @@ public class AccountApiTest extends BaseApiTest {
     public void updateBankAccount() throws Exception {
         ClientResponse response = insert(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), true), "banks");
         JSONObject js = new JSONObject(response.getEntity(String.class));
-        js.put("name", "XXX");
+        js.getJSONObject("data").put("name", "XXX");
 
-        ClientResponse resp = webService.path("api").path("accounts/banks/" + js.getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js);
+        ClientResponse resp = webService.path("api").path("accounts/banks/" + js.getJSONObject("data").getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, js.getJSONObject("data"));
 
         JSONObject jsUpdate = new JSONObject(resp.getEntity(String.class));
 
-        Assert.assertEquals("XXX", jsUpdate.getString("name"));
+        Assert.assertEquals("XXX", jsUpdate.getJSONObject("data").getString("name"));
     }
 
     @Test
@@ -125,8 +135,8 @@ public class AccountApiTest extends BaseApiTest {
         ClientResponse response = insert(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), true), "banks");
         JSONObject js = new JSONObject(response.getEntity(String.class));
 
-        ClientResponse resp = webService.path("api").path("accounts/banks/" + js.getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
-        Assert.assertEquals(204, resp.getStatus());
+        ClientResponse resp = webService.path("api").path("accounts/banks/" + js.getJSONObject("data").getLong("id")).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        Assert.assertEquals(200, resp.getStatus());
     }
 
 
@@ -135,8 +145,8 @@ public class AccountApiTest extends BaseApiTest {
         insert(AccountMockCreater.getGarantiOwnAccount(CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), BankEnum.GARAN.getVal(), true), "banks");
         ClientResponse resp = webService.path("api").path("accounts/banks").accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         String actual = resp.getEntity(String.class);
-        JSONArray jsonArray = new JSONArray(actual);
-        Assert.assertTrue(jsonArray.length() > 0);
+        JSONObject jsonObject = new JSONObject(actual);
+        Assert.assertTrue(jsonObject.getJSONArray("data").length() > 0);
     }
 
 

@@ -27,17 +27,25 @@ public class JobApi {
     @GET
     @Path("start")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean start() {
-        transactionThreadPoolExecuter.start();
-        return true;
+    public Response<Boolean> start() {
+        try {
+            transactionThreadPoolExecuter.start();
+            return Response.of(true, "", "OK");
+        } catch (Exception e) {
+            return Response.of(false, e.getMessage(), "NOK");
+        }
     }
 
     @GET
     @Path("stop")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean stop() {
-        transactionThreadPoolExecuter.stop();
-        return true;
+    public Response<Boolean> stop() {
+        try {
+            transactionThreadPoolExecuter.stop();
+            return Response.of(true, "", "OK");
+        } catch (Exception e) {
+            return Response.of(false, e.getMessage(), "NOK");
+        }
     }
 
 }

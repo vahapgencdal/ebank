@@ -39,7 +39,7 @@ curl -X GET \
 ```
 
 ### 4.  add accounts from console
-1. execute below scripts for bank-accounts  
+-  execute below scripts for bank-accounts  
 
 ```
 curl -X POST \
@@ -156,7 +156,8 @@ curl -X POST \
     "bank":"GARAN"
 }'
 ```
-2. execute below scripts for dummy user-accounts  
+- Execute below scripts for dummy user-accounts 
+
 ```
 curl -X POST \
   http://localhost:8080/api/accounts/users \
@@ -273,7 +274,7 @@ curl -X POST \
     "user":"EMRE"
 }'
 ```
-3. Transfer moneys All Posibilities example
+- Transfer moneys All Posibilities example
 ```
 curl -X POST \
   http://localhost:8080/api/transfers/accountToAccount \
@@ -487,4 +488,129 @@ curl -X POST \
 	 "amount":300
 }'
 ```
-you will see transacion logs in console.
+
+4. Transfer between over AccountNo to Iban with Same User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 7c8c3856-e938-4a2e-a5c5-54bf85b226fd' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "senderBic":"IS",
+	 "amount":300
+}'
+```
+5. Transfer between over AccountNo to Iban with Different User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 3efe0807-cb8d-4ece-b46e-6388a35611c3' \
+  -d '{
+	 "senderAccountNo":"123458",
+	 "receiverIban":"1234-2367-3456-6543-89",
+	 "senderBic":"IS",
+	 "amount":300
+}'
+```
+6. Transfer between over AccountNo to Iban with Different User Different Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/accountToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 4aa73e0f-718c-41ac-ad2d-7865c1575e4d' \
+  -d '{
+	 "senderAccountNo":"123456",
+	 "receiverIban":"1234-4321-3456-6543-89",
+	 "senderBic":"GARAN",
+	 "amount":300
+}'
+```
+7. Transfer between over Iban to AccountNo with Same User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 3cb5ded9-d9b7-49b2-97a4-dd06f0beaddd' \
+  -d '{
+	 "receiverAccountNo":"123458",
+	 "senderIban":"1234-4321-3456-3433-99",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+8. Transfer between over Iban to AccountNo with Different User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 08062ad9-7f70-44dd-bf4e-8580487fccd9' \
+  -d '{
+	 "receiverAccountNo":"123458",
+	 "senderIban":"1234-2367-3456-6543-89",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+9. Transfer between over Iban to AccountNo with Different User Different Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToAccount \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 4aaef532-d41c-45d9-9ffb-168422048564' \
+  -d '{
+	"senderIban":"1234-4321-3456-6543-12",
+	 "receiverAccountNo":"123458",
+	 "receiverBic":"IS",
+	 "amount":300
+}'
+```
+10. Transfer between over Iban to Iban with Same User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 68d5c071-9d56-4f55-b835-3886a450cc5f' \
+  -d '{
+	 "senderIban":"1234-4321-3456-6543-89",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "amount":300
+}'
+```
+11. Transfer between over Iban to Iban with Different User Same Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 281bb8d6-260f-41dd-806a-cc8e4c62e63b' \
+  -d '{
+	 "senderIban":"1234-2367-3456-6543-89",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "amount":300
+}'
+```
+12. Transfer between over Iban to Iban with Different User Different Bank
+```
+curl -X POST \
+  http://localhost:8080/api/transfers/ibanToIban \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 20708dd0-8ecb-4661-abf9-a12dbed821b1' \
+  -d '{
+	 "senderIban":"1234-4321-3456-6543-12",
+	 "receiverIban":"1234-4321-3456-3433-99",
+	 "amount":300
+}'
+```
+
+you will see transacion logs with COMPLETED status in console.

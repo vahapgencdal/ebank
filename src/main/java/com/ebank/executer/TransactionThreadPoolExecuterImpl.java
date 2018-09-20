@@ -29,9 +29,7 @@ public class TransactionThreadPoolExecuterImpl implements TransactionThreadPoolE
 
     public void start() {
         try {
-            scheduledPoolService.scheduleWithFixedDelay(new TransactionExecuter(transactionService), 500, 1000, TimeUnit.MILLISECONDS);
-
-            scheduledPoolService.scheduleWithFixedDelay(new TransactionExecuter(transactionService), 500, 1000, TimeUnit.MILLISECONDS);
+            scheduledPoolService.scheduleWithFixedDelay(new TransactionExecuter(transactionService), 100, 1000, TimeUnit.MILLISECONDS);
             TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();

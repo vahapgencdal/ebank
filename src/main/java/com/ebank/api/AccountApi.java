@@ -31,75 +31,152 @@ public class AccountApi {
     @GET
     @Path("/banks")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<BankAccount> getAllBankAccounts() {
-        return bankAccountService.getAll();
+    public Response<List<BankAccount>> getAllBankAccounts() {
+        try {
+            List<BankAccount> bankAccount = bankAccountService.getAll();
+            return Response.of(bankAccount, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @GET
     @Path("/banks/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public BankAccount getBankAccountById(@PathParam("id") long id) {
-        return bankAccountService.getById(id);
+    public Response<BankAccount> getBankAccountById(@PathParam("id") long id) {
+        try {
+            BankAccount bankAccount = bankAccountService.getById(id);
+            return Response.of(bankAccount, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
+    }
+
+
+    @GET
+    @Path("/banks/account/{no}/{bic}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<BankAccount> getBankAccountById(@PathParam("no") String no, @PathParam("bic") String bic) {
+        try {
+            BankAccount bankAccount = bankAccountService.getByAccountNo(no, bic);
+            return Response.of(bankAccount, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @POST
     @Path("/banks")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public BankAccount createBankAccount(BankAccount account) {
-        return bankAccountService.create(account);
+    public Response<BankAccount> createBankAccount(BankAccount account) {
+        try {
+            BankAccount bankAccount = bankAccountService.create(account);
+            return Response.of(bankAccount, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @PUT
     @Path("/banks/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public BankAccount updateBankAccount(BankAccount account) {
-        return bankAccountService.update(account);
+    public Response<BankAccount> updateBankAccount(BankAccount account) {
+        try {
+            BankAccount bankAccount = bankAccountService.update(account);
+            return Response.of(bankAccount, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @DELETE
     @Path("/banks/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void removeBankAccount(@PathParam("id") long id) {
-        bankAccountService.remove(id);
+    public Response<Object> removeBankAccount(@PathParam("id") long id) {
+        try {
+            bankAccountService.remove(id);
+            return Response.of(null, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @GET
     @Path("/users")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UserAccount> getAllUserAccounts() {
-        return userAccountService.getAll();
+    public Response<List<UserAccount>> getAllUserAccounts() {
+        try {
+            List<UserAccount> us = userAccountService.getAll();
+            return Response.of(us, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @GET
     @Path("/users/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserAccount getUserAccountById(@PathParam("id") long id) {
-        return userAccountService.getById(id);
+    public Response<UserAccount> getUserAccountById(@PathParam("id") long id) {
+        try {
+            UserAccount us = userAccountService.getById(id);
+            return Response.of(us, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
+
+    @GET
+    @Path("/users/account/{no}/{bic}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<UserAccount> getUserAccountById(@PathParam("no") String no, @PathParam("bic") String bic) {
+        try {
+            UserAccount us = userAccountService.getByAccountNo(no, bic);
+            return Response.of(us, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
+    }
+
 
     @POST
     @Path("/users")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserAccount createUserAccount(UserAccount account) {
-        return userAccountService.create(account);
+    public Response<UserAccount> createUserAccount(UserAccount account) {
+        try {
+            UserAccount us = userAccountService.create(account);
+            return Response.of(us, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @PUT
     @Path("/users/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserAccount updateUserAccount(UserAccount account) {
-        return userAccountService.update(account);
+    public Response<UserAccount> updateUserAccount(UserAccount account) {
+        try {
+            UserAccount us = userAccountService.update(account);
+            return Response.of(us, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
     }
 
     @DELETE
     @Path("/users/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void removeUserAccount(@PathParam("id") long id) {
-        userAccountService.remove(id);
+    public Response<Object> removeUserAccount(@PathParam("id") long id) {
+        try {
+            userAccountService.remove(id);
+            return Response.of(null, "", "OK");
+        } catch (Exception e) {
+            return Response.of(null, e.getMessage(), "NOK");
+        }
+
     }
 
 
