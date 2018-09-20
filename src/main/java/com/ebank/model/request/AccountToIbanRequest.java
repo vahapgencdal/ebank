@@ -16,7 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class IbanTransferRequest extends TransferRequest {
-    private String iban;
+public class AccountToIbanRequest {
+    private String senderAccountNo;
+    private String senderBic;
+
+    private String receiverIban;
     private double amount;
 }

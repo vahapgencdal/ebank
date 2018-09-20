@@ -1,10 +1,10 @@
 package com.ebank.api;
 
 import com.ebank.model.entity.Transaction;
-import com.ebank.model.request.newfolder.AccountToAccountRequest;
-import com.ebank.model.request.newfolder.AccountToIbanRequest;
-import com.ebank.model.request.newfolder.IbanToAccountRequest;
-import com.ebank.model.request.newfolder.IbanToIbanRequest;
+import com.ebank.model.request.AccountToAccountRequest;
+import com.ebank.model.request.AccountToIbanRequest;
+import com.ebank.model.request.IbanToAccountRequest;
+import com.ebank.model.request.IbanToIbanRequest;
 import com.ebank.model.service.TransferService;
 import com.google.inject.Inject;
 

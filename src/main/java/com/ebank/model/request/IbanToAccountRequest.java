@@ -1,4 +1,4 @@
-package com.ebank.model.request.newfolder;
+package com.ebank.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,11 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class AccountToAccountRequest {
-    private String senderAccountNo;
-    private String senderBic;
-
+public class IbanToAccountRequest {
     private String receiverAccountNo;
     private String receiverBic;
+
+    private String senderIban;
     private double amount;
 }
