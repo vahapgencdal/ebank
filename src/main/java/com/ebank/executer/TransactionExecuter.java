@@ -43,7 +43,7 @@ public class TransactionExecuter implements Runnable {
             Logger.getLogger(TransactionExecuter.class.getName()).log(Level.INFO, message);
             Thread.sleep(100);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Logger.getLogger(TransactionExecuter.class.getName()).log(Level.WARNING, e.getMessage());
         }
 
     }

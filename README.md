@@ -1,5 +1,8 @@
 # ebank  
 
+[![Build Status](https://travis-ci.org/vahapgencdal/ebank.svg?branch=master)](https://travis-ci.org/vahapgencdal/ebank) 
+   [![Codecov branch](https://codecov.io/gh/vahapgencdal/ebank/branches/branch/master/graphs/badge.svg)](https://codecov.io/gh/vahapgencdal/ebank/branches)
+
 ## Online money Transfer between Accounts
 
  I used below technogologies for project
