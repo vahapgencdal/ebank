@@ -243,7 +243,7 @@ public class TransactionRepositoryImpl extends BaseRepositoryImpl<Transaction> i
 
             double senderAmount = senderAccount.getTotalAmount() - transaction.getAmount();
             senderAccount.setTotalAmount(senderAmount);
-            double senderBlockedAmount = senderAccount.getBlockedAmount() - transaction.getAmount() - feeAmount;
+            double senderBlockedAmount = transaction.getAmount() + feeAmount;
             senderAccount.setBlockedAmount(senderBlockedAmount);
 
 

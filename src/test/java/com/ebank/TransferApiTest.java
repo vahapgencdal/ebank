@@ -47,7 +47,7 @@ public class TransferApiTest extends BaseApiTest {
         vhpGaranTlAccountSec = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Vahap Garan Tl Sec Drawing Account", BankEnum.GARAN.getVal(), true, 1000000);
         vhpGaranUsdAccount = AccountMockCreater.getUserAccount(UserEnum.VAHAP.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Vahap  Garan Tl Deposit Account", BankEnum.GARAN.getVal(), true, 1000000);
 
-        emreIsBankTlAccount = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Emre Tl Drawing Account", BankEnum.IS.getVal(), true, 1000);
+        emreIsBankTlAccount = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Emre Tl Drawing Account", BankEnum.IS.getVal(), true, 1000000);
         emreIsBankUsdAccount = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.USD.toString(), AccountTypeEnum.DRAW.toString(), "Emre Dolar Currency Account", BankEnum.IS.getVal(), true, 1000000);
         emreGaranTlAccount = AccountMockCreater.getUserAccount(UserEnum.EMRE.getVal(), CurrencyEnum.TL.toString(), AccountTypeEnum.DRAW.toString(), "Emre Garan Tl Account", BankEnum.GARAN.getVal(), true, 1000000);
 
@@ -104,22 +104,23 @@ public class TransferApiTest extends BaseApiTest {
         return new JSONObject(respGet.getEntity(String.class));
     }
 
+    private JSONObject transferAccountToAccount(UserAccount sender, UserAccount receiver, double amount, String path) throws IOException, JSONException {
+        AccountToAccountRequest request = new AccountToAccountRequest();
+        request.setAmount(amount);
+        request.setReceiverAccountNo(receiver.getAccountNo());
+        request.setReceiverBic(receiver.getBank());
+        request.setSenderAccountNo(sender.getAccountNo());
+        request.setSenderBic(sender.getBank());
+        String content = json(request);
+        ClientResponse resp = webService.path("api").path(path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
+        complete();
+        return new JSONObject(resp.getEntity(String.class));
+    }
+
     @Test
     public void AccountsToAccountSameUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-
-
-        AccountToAccountRequest request = new AccountToAccountRequest();
-        request.setAmount(100);
-        request.setReceiverAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setReceiverBic(vhpGaranTlAccount.getBank());
-        request.setSenderAccountNo(vhpGaranTlAccountSec.getAccountNo());
-        request.setSenderBic(vhpGaranTlAccountSec.getBank());
-        String content = json(request);
-        webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-
-        JSONObject complete = complete();
-
+        transferAccountToAccount(vhpGaranTlAccountSec, vhpGaranTlAccount, 100, "transfers/accountToAccount");
         JSONObject account = getAccount(vhpGaranTlAccountSec.getAccountNo(), vhpGaranTlAccountSec.getBank(), "users");
         boolean result = vhpGaranTlAccountSec.getTotalAmount() - 100 == account.getJSONObject("data").getDouble("totalAmount");
         Assert.assertTrue(result);
@@ -127,23 +128,18 @@ public class TransferApiTest extends BaseApiTest {
 
     @Test
     public void AccountsToAccountSameUserSameBankDifferentCurrency() throws JSONException, IOException {
-        Assert.assertTrue(true);
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(vhpGaranUsdAccount, vhpGaranTlAccount, 300, "transfers/accountToAccount");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
     public void AccountsToAccountDifferentUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-
-        AccountToAccountRequest request = new AccountToAccountRequest();
-        request.setAmount(200);
-        request.setReceiverAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setReceiverBic(vhpGaranTlAccount.getBank());
-        request.setSenderAccountNo(emreGaranTlAccount.getAccountNo());
-        request.setSenderBic(emreGaranTlAccount.getBank());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferAccountToAccount(emreGaranTlAccount, vhpGaranTlAccount, 200, "transfers/accountToAccount");
         JSONObject account = getAccount(emreGaranTlAccount.getAccountNo(), emreGaranTlAccount.getBank(), "users");
         double resultAmount = emreGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -152,22 +148,18 @@ public class TransferApiTest extends BaseApiTest {
 
     @Test
     public void AccountsToAccountDifferentUserSameBankDifferentCurrency() throws JSONException, IOException {
-        Assert.assertTrue(true);
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(vhpGaranUsdAccount, emreGaranTlAccount, 400, "transfers/accountToAccount");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
     }
 
     @Test
     public void AccountsToAccountDifferentUserDifferentBank() throws JSONException, IOException {
         this.initializeTest();
-        AccountToAccountRequest request = new AccountToAccountRequest();
-        request.setAmount(190);
-        request.setReceiverAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setReceiverBic(vhpGaranTlAccount.getBank());
-        request.setSenderAccountNo(emreIsBankTlAccount.getAccountNo());
-        request.setSenderBic(emreIsBankTlAccount.getBank());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/accountToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        JSONObject complete = complete();
+        JSONObject transaction = transferAccountToAccount(emreIsBankTlAccount, vhpGaranTlAccount, 100, "transfers/accountToAccount");
         JSONObject account = getAccount(emreIsBankTlAccount.getAccountNo(), emreIsBankTlAccount.getBank(), "users");
         double resultAmount = emreIsBankTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -176,23 +168,87 @@ public class TransferApiTest extends BaseApiTest {
 
     @Test
     public void AccountsToAccountDifferentUserDifferentBankDifferentCurrency() throws JSONException, IOException {
-        Assert.assertTrue(true);
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(vhpGaranUsdAccount, emreIsBankTlAccount, 100, "transfers/accountToAccount");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    //ERROR CASES NOT ENOUGH MONEY
+
+    @Test
+    public void AccountsToAccountSameUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject js = transferAccountToAccount(vhpGaranTlAccountSec, vhpGaranTlAccount, 100000000, "transfers/accountToAccount");
+        Assert.assertEquals("NOK", js.getString("code"));
+    }
+
+    @Test
+    public void AccountsToAccountSameUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(vhpGaranUsdAccount, vhpGaranTlAccount, 100000000, "transfers/accountToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void AccountsToAccountDifferentUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(emreGaranTlAccount, vhpGaranTlAccount, 20000000, "transfers/accountToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void AccountsToAccountDifferentUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(vhpGaranUsdAccount, emreGaranTlAccount, 200000000, "transfers/accountToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void AccountsToAccountDifferentUserDifferentBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(emreIsBankTlAccount, vhpGaranTlAccount, 1042342340, "transfers/accountToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void AccountsToAccountDifferentUserDifferentBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToAccount(vhpGaranUsdAccount, emreIsBankTlAccount, 1543344400, "transfers/accountToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+
+    private JSONObject transferAccountToIban(UserAccount sender, UserAccount receiver, double amount, String path) throws IOException, JSONException {
+        AccountToIbanRequest request = new AccountToIbanRequest();
+        request.setAmount(amount);
+        request.setReceiverIban(receiver.getIban());
+        request.setSenderAccountNo(sender.getAccountNo());
+        request.setSenderBic(sender.getBank());
+        String content = json(request);
+        ClientResponse resp = webService.path("api").path(path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
+        complete();
+        return new JSONObject(resp.getEntity(String.class));
     }
 
     @Test
     public void AccountsToIbanSameUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-        AccountToIbanRequest request = new AccountToIbanRequest();
-        request.setAmount(190);
-        request.setReceiverIban(vhpGaranTlAccountSec.getIban());
-        request.setSenderAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setSenderBic(vhpGaranTlAccount.getBank());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/accountToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferAccountToIban(vhpGaranTlAccount, vhpGaranTlAccountSec, 100, "transfers/accountToIban");
         JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
         double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void AccountsToIbanSameUserSameBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranUsdAccount, vhpGaranTlAccount, 500, "transfers/accountToIban");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
         Assert.assertTrue(result);
     }
@@ -200,15 +256,7 @@ public class TransferApiTest extends BaseApiTest {
     @Test
     public void AccountsToIbanDifferentUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-        AccountToIbanRequest request = new AccountToIbanRequest();
-        request.setAmount(210);
-        request.setReceiverIban(emreGaranTlAccount.getIban());
-        request.setSenderAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setSenderBic(vhpGaranTlAccount.getBank());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/accountToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferAccountToIban(vhpGaranTlAccount, emreGaranTlAccount, 200, "transfers/accountToIban");
         JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
         double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -216,34 +264,100 @@ public class TransferApiTest extends BaseApiTest {
     }
 
     @Test
+    public void AccountsToIbanDifferentUserSameBankkDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranUsdAccount, emreGaranTlAccount, 400, "transfers/accountToIban");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+
+    @Test
     public void AccountsToIbanDifferentUserDifferentBank() throws JSONException, IOException {
         this.initializeTest();
-        AccountToIbanRequest request = new AccountToIbanRequest();
-        request.setAmount(250);
-        request.setReceiverIban(emreIsBankTlAccount.getIban());
-        request.setSenderAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setSenderBic(vhpGaranTlAccount.getBank());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/accountToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferAccountToIban(vhpGaranTlAccount, emreIsBankTlAccount, 400, "transfers/accountToIban");
         JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
         double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
         Assert.assertTrue(result);
+    }
+
+    @Test
+    public void AccountsToIbanDifferentUserDifferentBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranUsdAccount, emreIsBankTlAccount, 200, "transfers/accountToIban");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    //ERROR CASE NOT ENOUGH MONEY
+
+    @Test
+    public void AccountsToIbanSameUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranTlAccount, vhpGaranTlAccountSec, 100000000, "transfers/accountToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void AccountsToIbanSameUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranUsdAccount, vhpGaranTlAccount, 500000000, "transfers/accountToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void AccountsToIbanDifferentUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranTlAccount, emreGaranTlAccount, 200000000, "transfers/accountToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void AccountsToIbanDifferentUserSameBankkDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranUsdAccount, emreGaranTlAccount, 400000000, "transfers/accountToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+
+    @Test
+    public void AccountsToIbanDifferentUserDifferentBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranTlAccount, emreIsBankTlAccount, 400000000, "transfers/accountToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void AccountsToIbanDifferentUserDifferentBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferAccountToIban(vhpGaranUsdAccount, emreIsBankTlAccount, 2000000000, "transfers/accountToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+
+    private JSONObject transferIbanToIban(UserAccount sender, UserAccount receiver, double amount, String path) throws IOException, JSONException {
+        IbanToIbanRequest request = new IbanToIbanRequest();
+        request.setAmount(amount);
+        request.setReceiverIban(receiver.getIban());
+        request.setSenderIban(sender.getIban());
+        String content = json(request);
+        ClientResponse resp = webService.path("api").path(path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
+        complete();
+        return new JSONObject(resp.getEntity(String.class));
     }
 
     @Test
     public void IbanToIbanSameUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-        IbanToIbanRequest request = new IbanToIbanRequest();
-        request.setAmount(200);
-        request.setReceiverIban(vhpGaranTlAccount.getIban());
-        request.setSenderIban(vhpGaranTlAccountSec.getIban());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/ibanToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferIbanToIban(vhpGaranTlAccountSec, vhpGaranTlAccount, 200, "transfers/ibanToIban");
         JSONObject account = getAccount(vhpGaranTlAccountSec.getAccountNo(), vhpGaranTlAccountSec.getBank(), "users");
         double resultAmount = vhpGaranTlAccountSec.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -251,18 +365,31 @@ public class TransferApiTest extends BaseApiTest {
     }
 
     @Test
+    public void IbanToIbanSameUserSameBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranUsdAccount, vhpGaranTlAccount, 100, "transfers/ibanToIban");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    @Test
     public void IbanToIbanDifferentUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-        IbanToIbanRequest request = new IbanToIbanRequest();
-        request.setAmount(250);
-        request.setReceiverIban(vhpIsBankTlAccount.getIban());
-        request.setSenderIban(emreIsBankTlAccount.getIban());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/ibanToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferIbanToIban(emreIsBankTlAccount, vhpIsBankTlAccount, 100, "transfers/ibanToIban");
         JSONObject account = getAccount(emreIsBankTlAccount.getAccountNo(), emreIsBankTlAccount.getBank(), "users");
         double resultAmount = emreIsBankTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void IbanToIbanDifferentUserSameBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranUsdAccount, emreGaranTlAccount, 400, "transfers/ibanToIban");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
         Assert.assertTrue(result);
     }
@@ -270,14 +397,7 @@ public class TransferApiTest extends BaseApiTest {
     @Test
     public void IbanToIbanDifferentUserDifferentBank() throws JSONException, IOException {
         this.initializeTest();
-        IbanToIbanRequest request = new IbanToIbanRequest();
-        request.setAmount(300);
-        request.setReceiverIban(vhpIsBankTlAccount.getIban());
-        request.setSenderIban(emreGaranTlAccount.getIban());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/ibanToIban").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferIbanToIban(emreGaranTlAccount, vhpIsBankTlAccount, 500, "transfers/ibanToIban");
         JSONObject account = getAccount(emreGaranTlAccount.getAccountNo(), emreGaranTlAccount.getBank(), "users");
         double resultAmount = emreGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -285,18 +405,82 @@ public class TransferApiTest extends BaseApiTest {
     }
 
     @Test
+    public void IbanToIbanDifferentUserDifferentBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranUsdAccount, emreIsBankTlAccount, 200, "transfers/ibanToIban");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+
+    //ERROR CASE FOR NOT ENOUGH MONEY
+
+    @Test
+    public void IbanToIbanSameUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranTlAccountSec, vhpGaranTlAccount, 20000000, "transfers/ibanToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void IbanToIbanSameUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranUsdAccount, vhpGaranTlAccount, 100000000, "transfers/ibanToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToIbanDifferentUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(emreIsBankTlAccount, vhpIsBankTlAccount, 100000000, "transfers/ibanToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToIbanDifferentUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranUsdAccount, emreGaranTlAccount, 400000000, "transfers/ibanToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToIbanDifferentUserDifferentBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(emreGaranTlAccount, vhpIsBankTlAccount, 400000000, "transfers/ibanToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToIbanDifferentUserDifferentBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToIban(vhpGaranUsdAccount, emreIsBankTlAccount, 200000000, "transfers/ibanToIban");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    private JSONObject transferIbanToAccount(UserAccount sender, UserAccount receiver, double amount, String path) throws IOException, JSONException {
+        IbanToAccountRequest request = new IbanToAccountRequest();
+        request.setAmount(amount);
+        request.setReceiverAccountNo(receiver.getAccountNo());
+        request.setReceiverBic(receiver.getBank());
+        request.setSenderIban(sender.getIban());
+        String content = json(request);
+        ClientResponse resp = webService.path("api").path(path).type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
+        complete();
+        return new JSONObject(resp.getEntity(String.class));
+    }
+
+
+    @Test
     public void IbanToAccountSameUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-        IbanToAccountRequest request = new IbanToAccountRequest();
-        request.setAmount(400);
-        request.setReceiverAccountNo(vhpGaranTlAccountSec.getAccountNo());
-        request.setReceiverBic(vhpGaranTlAccountSec.getBank());
+        JSONObject transaction = transferIbanToAccount(vhpGaranTlAccount, vhpGaranTlAccountSec, 100, "transfers/ibanToAccount");
 
-        request.setSenderIban(vhpGaranTlAccount.getIban());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/ibanToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
         JSONObject account = getAccount(vhpGaranTlAccount.getAccountNo(), vhpGaranTlAccount.getBank(), "users");
         double resultAmount = vhpGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -304,18 +488,19 @@ public class TransferApiTest extends BaseApiTest {
     }
 
     @Test
+    public void IbanToAccountSameUserSameBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranUsdAccount, emreGaranTlAccount, 100, "transfers/ibanToAccount");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    @Test
     public void IbanToAccountDifferentUserSameBank() throws JSONException, IOException {
         this.initializeTest();
-        IbanToAccountRequest request = new IbanToAccountRequest();
-        request.setAmount(300);
-        request.setReceiverAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setReceiverBic(vhpGaranTlAccount.getBank());
-
-        request.setSenderIban(emreGaranTlAccount.getIban());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/ibanToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferIbanToAccount(emreGaranTlAccount, vhpGaranTlAccount, 200, "transfers/ibanToAccount");
         JSONObject account = getAccount(emreGaranTlAccount.getAccountNo(), emreGaranTlAccount.getBank(), "users");
         double resultAmount = emreGaranTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
@@ -323,21 +508,80 @@ public class TransferApiTest extends BaseApiTest {
     }
 
     @Test
+    public void IbanToAccountDifferentUserSameBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranUsdAccount, emreGaranTlAccount, 400, "transfers/ibanToAccount");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    @Test
     public void IbanToAccountDifferentUserDifferentBank() throws JSONException, IOException {
         this.initializeTest();
-        IbanToAccountRequest request = new IbanToAccountRequest();
-        request.setAmount(250);
-        request.setReceiverAccountNo(vhpGaranTlAccount.getAccountNo());
-        request.setReceiverBic(vhpGaranTlAccount.getBank());
-
-        request.setSenderIban(emreIsBankTlAccount.getIban());
-        String content = json(request);
-        ClientResponse resp = webService.path("api").path("transfers/ibanToAccount").type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-        JSONObject transaction = new JSONObject(resp.getEntity(String.class));
-        complete();
+        JSONObject transaction = transferIbanToAccount(emreIsBankTlAccount, vhpGaranTlAccount, 300, "transfers/ibanToAccount");
         JSONObject account = getAccount(emreIsBankTlAccount.getAccountNo(), emreIsBankTlAccount.getBank(), "users");
         double resultAmount = emreIsBankTlAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount") - transaction.getJSONObject("data").getDouble("amount") * transaction.getJSONObject("data").getDouble("fee");
         boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
         Assert.assertTrue(result);
+    }
+
+    @Test
+    public void IbanToAccountDifferentUserDifferentBankDifferentCurrency() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranUsdAccount, emreIsBankTlAccount, 200, "transfers/ibanToAccount");
+        JSONObject account = getAccount(vhpGaranUsdAccount.getAccountNo(), vhpGaranUsdAccount.getBank(), "users");
+        double resultAmount = vhpGaranUsdAccount.getTotalAmount() - transaction.getJSONObject("data").getDouble("amount");
+        boolean result = resultAmount == account.getJSONObject("data").getDouble("totalAmount");
+        Assert.assertTrue(result);
+    }
+
+    //ERROR CASE FOR NOT ENOUGH MONEY
+    @Test
+    public void IbanToAccountSameUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranTlAccount, vhpGaranTlAccountSec, 100000000, "transfers/ibanToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+    }
+
+    @Test
+    public void IbanToAccountSameUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranUsdAccount, emreGaranTlAccount, 100000000, "transfers/ibanToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToAccountDifferentUserSameBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(emreGaranTlAccount, vhpGaranTlAccount, 200000000, "transfers/ibanToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToAccountDifferentUserSameBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranUsdAccount, emreGaranTlAccount, 40000000, "transfers/ibanToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToAccountDifferentUserDifferentBankNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(emreIsBankTlAccount, vhpGaranTlAccount, 30000000, "transfers/ibanToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
+    }
+
+    @Test
+    public void IbanToAccountDifferentUserDifferentBankDifferentCurrencyNotEnoughMoney() throws JSONException, IOException {
+        this.initializeTest();
+        JSONObject transaction = transferIbanToAccount(vhpGaranUsdAccount, emreIsBankTlAccount, 200000000, "transfers/ibanToAccount");
+        Assert.assertEquals("NOK", transaction.getString("code"));
+
     }
 }
