@@ -15,7 +15,8 @@
 
 ### 1. install dependencies
 
-execute `mvn clean install` under ebank directory.
+execute `mvn clean install` under ebank directory.  
+after `mvn clean install` all test run automatically
 
 ### 2.  start application
 
