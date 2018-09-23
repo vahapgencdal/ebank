@@ -3,7 +3,6 @@ package com.ebank.model.service.impl;
 import com.ebank.model.entity.Transaction;
 import com.ebank.model.repository.TransactionRepository;
 import com.ebank.model.service.TransactionService;
-import com.ebank.util.TransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -51,30 +50,4 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionRepository.remove(id);
     }
 
-    @Override
-    public int getSize() {
-        return this.transactionRepository.getSize();
-    }
-
-    @Override
-    public Transaction getAnyPendingTransaction() {
-        return transactionRepository.getAnyPendingTransaction();
-    }
-
-    @Override
-    public Transaction complete(Transaction transaction) {
-        return transactionRepository.complete(transaction);
-    }
-
-    @Override
-    public boolean completeTransaction() {
-        Transaction transaction = transactionRepository.getAnyPendingTransaction();
-        if (transaction != null) {
-            Transaction update = transactionRepository.complete(transaction);
-            return update.getStatus().equals(TransactionStatus.COMPLETED.toString());
-        } else {
-            return false;
-        }
-
-    }
 }

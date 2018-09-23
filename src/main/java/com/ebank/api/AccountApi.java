@@ -2,12 +2,16 @@ package com.ebank.api;
 
 import com.ebank.model.entity.BankAccount;
 import com.ebank.model.entity.UserAccount;
+import com.ebank.model.request.AccountRequest;
 import com.ebank.model.service.BankAccountService;
 import com.ebank.model.service.UserAccountService;
 import com.google.inject.Inject;
 
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,24 +58,58 @@ public class AccountApi {
 
 
     @GET
-    @Path("/banks/account/{no}/{bic}")
+    @Path("/banks/account/{accountNo}/{bankCode}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<BankAccount> getBankAccountById(@PathParam("no") String no, @PathParam("bic") String bic) {
+    public Response<BankAccount> getBankAccountById(@PathParam("accountNo") String accountNo, @PathParam("bankCode") String bankCode) {
         try {
-            BankAccount bankAccount = bankAccountService.getByAccountNo(no, bic);
+            BankAccount bankAccount = bankAccountService.getByAccountNoAndBank(accountNo, bankCode);
             return Response.of(bankAccount, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
         }
     }
 
+    private UserAccount getUserAccount(AccountRequest req) {
+        UserAccount userAccount = new UserAccount();
+        userAccount.setName(req.getName());
+        userAccount.setBank(req.getBank());
+        userAccount.setAccountNo(req.getAccountNo());
+        userAccount.setId(req.getId());
+        userAccount.setType(req.getType());
+        List<MonetaryAmount> amountList = new ArrayList<>();
+
+        for (int i = 0; i < req.getAmounts().size(); i++) {
+            MonetaryAmount amount1 = Monetary.getDefaultAmountFactory().setNumber(req.getAmounts().get(i).getAmount()).setCurrency(req.getAmounts().get(i).getCurrency()).create();
+            amountList.add(amount1);
+        }
+        userAccount.setAmounts(amountList);
+        userAccount.setUser(req.getUser());
+        return userAccount;
+    }
+
+    private BankAccount getBankAccount(AccountRequest req) {
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.setName(req.getName());
+        bankAccount.setBank(req.getBank());
+        bankAccount.setAccountNo(req.getAccountNo());
+        bankAccount.setId(req.getId());
+        bankAccount.setType(req.getType());
+        List<MonetaryAmount> amountList = new ArrayList<>();
+        for (int i = 0; i < req.getAmounts().size(); i++) {
+            MonetaryAmount amount1 = Monetary.getDefaultAmountFactory().setNumber(req.getAmounts().get(i).getAmount()).setCurrency(req.getAmounts().get(i).getCurrency()).create();
+            amountList.add(amount1);
+        }
+        bankAccount.setAmounts(amountList);
+        return bankAccount;
+    }
+
     @POST
     @Path("/banks")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<BankAccount> createBankAccount(BankAccount account) {
+    public Response<BankAccount> createBankAccount(AccountRequest account) {
         try {
-            BankAccount bankAccount = bankAccountService.create(account);
+            BankAccount bankAccount = bankAccountService.create(getBankAccount(account));
             return Response.of(bankAccount, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
@@ -82,9 +120,9 @@ public class AccountApi {
     @Path("/banks/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<BankAccount> updateBankAccount(BankAccount account) {
+    public Response<BankAccount> updateBankAccount(AccountRequest account) {
         try {
-            BankAccount bankAccount = bankAccountService.update(account);
+            BankAccount bankAccount = bankAccountService.update(getBankAccount(account));
             return Response.of(bankAccount, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
@@ -128,11 +166,11 @@ public class AccountApi {
     }
 
     @GET
-    @Path("/users/account/{no}/{bic}")
+    @Path("/users/account/{accountNo}/{bankCode}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<UserAccount> getUserAccountById(@PathParam("no") String no, @PathParam("bic") String bic) {
+    public Response<UserAccount> getUserAccountByAccountNoAndBankCode(@PathParam("accountNo") String accountNo, @PathParam("bankCode") String bankCode) {
         try {
-            UserAccount us = userAccountService.getByAccountNo(no, bic);
+            UserAccount us = userAccountService.getByAccountNoAndBank(accountNo, bankCode);
             return Response.of(us, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
@@ -144,9 +182,9 @@ public class AccountApi {
     @Path("/users")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<UserAccount> createUserAccount(UserAccount account) {
+    public Response<UserAccount> createUserAccount(AccountRequest account) {
         try {
-            UserAccount us = userAccountService.create(account);
+            UserAccount us = userAccountService.create(getUserAccount(account));
             return Response.of(us, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
@@ -157,9 +195,9 @@ public class AccountApi {
     @Path("/users/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<UserAccount> updateUserAccount(UserAccount account) {
+    public Response<UserAccount> updateUserAccount(AccountRequest account) {
         try {
-            UserAccount us = userAccountService.update(account);
+            UserAccount us = userAccountService.update(getUserAccount(account));
             return Response.of(us, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.money.MonetaryAmount;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -23,30 +24,22 @@ public class Transaction {
     private long senderAccountId;
     private String senderAccountName;
     private String senderAccountNo;
-    private String senderIban;
-    private double senderAccountAmount;
-    private String senderCurrency;
-    private boolean senderDefaultAccount;
+    private MonetaryAmount senderBalance;
     private String senderBank;
     private String senderUser;
 
     private long receiverAccountId;
     private String receiverAccountName;
     private String receiverAccountNo;
-    private String receiverIban;
-    private double receiverAccountAmount;
-    private String receiverCurrency;
-    private boolean receiverDefaultAccount;
+    private MonetaryAmount receiverBalance;
     private String receiverBank;
     private String receiverUser;
 
-    private double amount;
-    private double fee;
-    private String status;//PROCESSING,REJECTED,COMPLETED
-
+    private MonetaryAmount amount;
+    private MonetaryAmount feeAmount;
 
     @Override
     public String toString() {
-        return "Transaction{" + "id=" + id + ", senderAccountId=" + senderAccountId + ", senderAccountName='" + senderAccountName + '\'' + ", senderAccountNo='" + senderAccountNo + '\'' + ", senderIban='" + senderIban + '\'' + ", senderAccountAmount=" + senderAccountAmount + ", senderCurrency='" + senderCurrency + '\'' + ", senderDefaultAccount=" + senderDefaultAccount + ", senderBank='" + senderBank + '\'' + ", senderUser='" + senderUser + '\'' + ", receiverAccountId=" + receiverAccountId + ", receiverAccountName='" + receiverAccountName + '\'' + ", receiverAccountNo='" + receiverAccountNo + '\'' + ", receiverIban='" + receiverIban + '\'' + ", receiverAccountAmount=" + receiverAccountAmount + ", receiverCurrency='" + receiverCurrency + '\'' + ", receiverDefaultAccount=" + receiverDefaultAccount + ", receiverBank='" + receiverBank + '\'' + ", receiverUser='" + receiverUser + '\'' + ", amount=" + amount + ", fee=" + fee + ", status='" + status + '\'' + '}';
+        return "{" + "id:" + id + ", senderAccountId:" + senderAccountId + ", senderAccountName:'" + senderAccountName + '\'' + ", senderAccountNo:'" + senderAccountNo + '\'' + ", senderBalance:" + senderBalance + ", senderBank:'" + senderBank + '\'' + ", senderUser:'" + senderUser + '\'' + ", receiverAccountId:" + receiverAccountId + ", receiverAccountName:'" + receiverAccountName + '\'' + ", receiverAccountNo:'" + receiverAccountNo + '\'' + ", receiverBalance:" + receiverBalance + ", receiverBank:'" + receiverBank + '\'' + ", receiverUser:'" + receiverUser + '\'' + ", amount:" + amount + ", feeAmount:" + feeAmount + '}';
     }
 }

@@ -1,7 +1,5 @@
 package com.ebank.conf;
 
-import com.ebank.executer.TransactionThreadPoolExecuter;
-import com.ebank.executer.TransactionThreadPoolExecuterImpl;
 import com.ebank.model.repository.BankAccountRepository;
 import com.ebank.model.repository.TransactionRepository;
 import com.ebank.model.repository.UserAccountRepository;
@@ -43,7 +41,7 @@ public class ServerProvider {
     private final URI BASE_URI = getBaseURI();
     private HttpServer server;
 
-    protected URI getBaseURI() {
+    private URI getBaseURI() {
         return UriBuilder.fromUri("http://localhost/").port(8081).build();
     }
 
@@ -63,7 +61,6 @@ public class ServerProvider {
                 bind(TransactionService.class).to(TransactionServiceImpl.class);
 
                 bind(TransferService.class).to(TransferServiceImpl.class);
-                bind(TransactionThreadPoolExecuter.class).to(TransactionThreadPoolExecuterImpl.class);
 
                 bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
             }

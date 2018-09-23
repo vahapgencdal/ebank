@@ -10,11 +10,6 @@ import com.ebank.model.entity.UserAccount;
  */
 public interface UserAccountRepository extends BaseRepository<UserAccount> {
 
-    UserAccount getByAccountType(String accountType);
+    UserAccount getByAccountNoAndBank(String accountNo, String bank);
 
-    UserAccount getByIban(String iban);
-
-    UserAccount getByAccountNo(String accountNo, String bank);
-
-    UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency);
 }

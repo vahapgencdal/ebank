@@ -50,22 +50,12 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public int getSize() {
-        return this.bankAccountRepository.getSize();
+    public BankAccount getByAccountNoAndBank(String accountNo, String bank) {
+        return bankAccountRepository.getByAccountNoAndBank(accountNo, bank);
     }
 
     @Override
-    public BankAccount getByIban(String iban) {
-        return bankAccountRepository.getByIban(iban);
-    }
-
-    @Override
-    public BankAccount getByAccountNo(String accountNo, String bank) {
-        return bankAccountRepository.getByAccountNo(accountNo, bank);
-    }
-
-    @Override
-    public BankAccount getByCurrencyAndBank(String currencyId, String bank) {
-        return bankAccountRepository.getByCurrencyAndBank(currencyId, bank);
+    public BankAccount getByBankCode(String bankCode) {
+        return bankAccountRepository.getByBankCode(bankCode);
     }
 }

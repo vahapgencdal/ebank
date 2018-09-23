@@ -1,9 +1,11 @@
 package com.ebank.api;
 
 import com.ebank.model.entity.Transaction;
+import com.ebank.model.request.TransactionRequest;
 import com.ebank.model.service.TransactionService;
 import com.google.inject.Inject;
 
+import javax.money.Monetary;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -35,6 +37,26 @@ public class TransactionApi {
         }
     }
 
+    private Transaction getTransaction(TransactionRequest tr) {
+        Transaction transaction = new Transaction();
+        transaction.setSenderAccountId(tr.getSenderAccountId());
+        transaction.setSenderAccountNo(tr.getSenderAccountNo());
+        transaction.setSenderBalance(Monetary.getDefaultAmountFactory().setCurrency(tr.getSenderCurrency()).setNumber(tr.getSenderBalance()).create());
+        transaction.setSenderAccountName(tr.getSenderAccountName());
+        transaction.setReceiverAccountId(tr.getReceiverAccountId());
+        transaction.setReceiverBalance(Monetary.getDefaultAmountFactory().setCurrency(tr.getReceiverCurrency()).setNumber(tr.getReceiverBalance()).create());
+        transaction.setReceiverAccountNo(tr.getReceiverAccountNo());
+        transaction.setReceiverAccountName(tr.getReceiverAccountName());
+        transaction.setAmount(Monetary.getDefaultAmountFactory().setCurrency(tr.getAmountCurrency()).setNumber(tr.getAmountBalance()).create());
+        transaction.setFeeAmount(Monetary.getDefaultAmountFactory().setCurrency(tr.getReceiverCurrency()).setNumber(tr.getFeeAmount()).create());
+        transaction.setSenderUser(tr.getSenderUser());
+        transaction.setReceiverUser(tr.getReceiverUser());
+        transaction.setSenderBank(tr.getSenderBank());
+        transaction.setReceiverBank(tr.getReceiverBank());
+
+        return transaction;
+    }
+
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,8 +72,10 @@ public class TransactionApi {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Transaction> create(Transaction transaction) {
+    public Response<Transaction> create(TransactionRequest req) {
         try {
+            Transaction transaction = getTransaction(req);
+
             Transaction updated = transactionService.create(transaction);
             return Response.of(updated, "", "OK");
         } catch (Exception e) {
@@ -63,10 +87,10 @@ public class TransactionApi {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Transaction> update(Transaction transaction) {
+    public Response<Transaction> update(TransactionRequest req) {
         try {
-            Transaction updated = transactionService.update(transaction);
-            return Response.of(updated, "", "OK");
+            Transaction transaction = getTransaction(req);
+            return Response.of(transaction, "", "OK");
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
         }
@@ -83,19 +107,6 @@ public class TransactionApi {
         } catch (Exception e) {
             return Response.of(null, e.getMessage(), "NOK");
         }
-    }
-
-    @GET
-    @Path("complete")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response<Boolean> completeTransaction() {
-        try {
-            boolean result = transactionService.completeTransaction();
-            return Response.of(result, "", "OK");
-        } catch (Exception e) {
-            return Response.of(false, e.getMessage(), "NOK");
-        }
-
     }
 
 }

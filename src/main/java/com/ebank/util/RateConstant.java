@@ -11,12 +11,11 @@ import java.util.Map;
  */
 public enum RateConstant {
 
-    EURO_USD(2), EURO_TL(5), USD_TL(4), USD_EURO(0.5), TL_EURO(0.2), TL_USD(0.25);
-
+    EUR_USD(2), EUR_TL(5), USD_TL(4), USD_EUR(0.5), TL_EUR(0.2), TL_USD(0.25);
 
     private final double rate;
 
-    private static final Map<String, RateConstant> lookup = new HashMap<String, RateConstant>();
+    private static final Map<String, RateConstant> lookup = new HashMap<>();
 
     static {
         for (RateConstant d : RateConstant.values()) {
@@ -33,7 +32,7 @@ public enum RateConstant {
         return rate;
     }
 
-    private RateConstant(double rate) {
+    RateConstant(double rate) {
         this.rate = rate;
     }
 

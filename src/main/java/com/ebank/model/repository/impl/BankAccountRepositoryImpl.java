@@ -42,8 +42,7 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
     @Override
     public BankAccount update(BankAccount account) {
         BankAccount byId = this.getById(account.getId());
-        byId.setTotalAmount(account.getTotalAmount());
-        byId.setBlockedAmount(account.getBlockedAmount());
+        byId.setAmounts(account.getAmounts());
         byId.setName(account.getName());
         return byId;
     }
@@ -73,18 +72,13 @@ public class BankAccountRepositoryImpl extends BaseRepositoryImpl<BankAccount> i
 
 
     @Override
-    public BankAccount getByIban(String iban) {
-        return this.bankAccounts.parallelStream().filter(account -> account.getIban().equals(iban)).findAny().orElse(null);
-    }
-
-    @Override
-    public BankAccount getByAccountNo(String accountNo, String bank) {
+    public BankAccount getByAccountNoAndBank(String accountNo, String bank) {
         return this.bankAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
     }
 
     @Override
-    public BankAccount getByCurrencyAndBank(String currency, String bank) {
-        return this.bankAccounts.parallelStream().filter(account -> account.getCurrency().equals(currency) && account.getBank().equals(bank)).findAny().orElse(null);
+    public BankAccount getByBankCode(String bank) {
+        return this.bankAccounts.parallelStream().filter(account -> account.getBank().equals(bank)).findAny().orElse(null);
     }
 
 

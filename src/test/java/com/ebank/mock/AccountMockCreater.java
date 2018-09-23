@@ -1,9 +1,11 @@
 package com.ebank.mock;
 
-import com.ebank.model.entity.Account;
-import com.ebank.model.entity.BankAccount;
-import com.ebank.model.entity.UserAccount;
+import com.ebank.model.request.AccountRequest;
+import com.ebank.model.request.Amount;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -14,86 +16,48 @@ import java.util.UUID;
  */
 public class AccountMockCreater {
 
-    //Bank Account using for fee or another Incomes. when this change Case will change
-    public static Account getBankAccount(String accountTypeId, String currencyId, String userId, String bankId) {
-        Account account = new Account();
-        account.setName("BankAccount");
-        account.setAccountNo("111111");
-        account.setIban(UUID.randomUUID().toString());
-        account.setType(accountTypeId);
-        account.setTotalAmount(1000000000);
-        account.setCurrency(currencyId);
-        return account;
+    private static List<Amount> getAmountList(BigDecimal balance) {
+        List<Amount> amountList = new ArrayList<>();
+        amountList.add(new Amount(balance, "USD"));
+        amountList.add(new Amount(balance, "EUR"));
+
+        return amountList;
     }
 
-    public static Account getTestAccountOne(String accountTypeId, String currencyId, String userId, String bankId) {
-        Account account = new Account();
-        account.setName("TEST-2");
-        account.setAccountNo("222222");
-        account.setIban(UUID.randomUUID().toString());
-        account.setType(accountTypeId);
-        account.setTotalAmount(1000000000);
-        account.setCurrency(currencyId);
-        return account;
-    }
-
-    public static Account getTestAccountTwo(String accountTypeId, String currencyId, String userId, String bankId) {
-        Account account = new Account();
-        account.setName("TEST-3");
-        account.setAccountNo("333333");
-        account.setIban(UUID.randomUUID().toString());
-        account.setType(accountTypeId);
-        account.setTotalAmount(1000000000);
-        account.setCurrency(currencyId);
-        return account;
-    }
+    public static AccountRequest getIsBankOwnAccount(String accountType, String bankId, BigDecimal balance) {
 
 
-    public static BankAccount getIsBankOwnAccount(String currencyId, String accountType, String bankId, boolean isDefault) {
+        AccountRequest account = new AccountRequest();
 
-        BankAccount account = new BankAccount();
-
-        account.setName("Is Bank Own Account");
-        account.setCurrency(currencyId);
-        account.setTotalAmount(1000000000);
-        account.setBlockedAmount(0);
+        account.setName("Is Bank Account");
+        account.setAmounts(getAmountList(balance));
         account.setAccountNo(UUID.randomUUID().toString());
-        account.setIban(UUID.randomUUID().toString());
         account.setType(accountType);
         account.setBank(bankId);
-        account.setDefaultAccount(isDefault);
         return account;
     }
 
-    public static BankAccount getGarantiOwnAccount(String currencyId, String accountType, String bankId, boolean isDefault) {
+    public static AccountRequest getGarantiOwnAccount(String accountType, String bankId, BigDecimal balance) {
 
-        BankAccount account = new BankAccount();
-        account.setName("Garanti Own Account");
-        account.setCurrency(currencyId);
-        account.setTotalAmount(1000000000);
-        account.setBlockedAmount(0);
+        AccountRequest account = new AccountRequest();
+        account.setName("Garanti Account");
+        account.setAmounts(getAmountList(balance));
         account.setAccountNo(UUID.randomUUID().toString());
-        account.setIban(UUID.randomUUID().toString());
         account.setType(accountType);
         account.setBank(bankId);
-        account.setDefaultAccount(isDefault);
         return account;
     }
 
 
-    public static UserAccount getUserAccount(String userId, String currencyId, String accountType, String name, String bankId, boolean isDefault, long totalAmount) {
+    public static AccountRequest getUserAccount(String userId, String accountType, String name, String bankId, BigDecimal balance) {
 
-        UserAccount account = new UserAccount();
+        AccountRequest account = new AccountRequest();
         account.setName(name);
         account.setUser(userId);
-        account.setCurrency(currencyId);
-        account.setTotalAmount(totalAmount);
-        account.setBlockedAmount(0);
+        account.setAmounts(getAmountList(balance));
         account.setAccountNo(UUID.randomUUID().toString());
-        account.setIban(UUID.randomUUID().toString());
         account.setType(accountType);
         account.setBank(bankId);
-        account.setDefaultAccount(isDefault);
         return account;
     }
 

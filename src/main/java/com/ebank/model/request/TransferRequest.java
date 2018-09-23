@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.math.BigDecimal;
 
 /**
  * @author Vahap Gencdal
@@ -16,11 +17,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class AccountToAccountRequest {
+public class TransferRequest {
     private String senderAccountNo;
-    private String senderBic;
+    private String senderBankCode;
+    private String senderCurrencyCode;
 
     private String receiverAccountNo;
-    private String receiverBic;
-    private double amount;
+    private String receiverBankCode;
+    private String receiverCurrencyCode;
+    private BigDecimal amount;
 }

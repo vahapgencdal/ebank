@@ -50,22 +50,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public int getSize() {
-        return this.userAccountRepository.getSize();
-    }
-
-    @Override
-    public UserAccount getByIban(String iban) {
-        return userAccountRepository.getByIban(iban);
-    }
-
-    @Override
-    public UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency) {
-        return userAccountRepository.getByAccountNoAndBankAndCurrency(accountNo, bank, currency);
-    }
-
-    @Override
-    public UserAccount getByAccountNo(String accountNo, String bank) {
-        return userAccountRepository.getByAccountNo(accountNo, bank);
+    public UserAccount getByAccountNoAndBank(String accountNo, String bank) {
+        return userAccountRepository.getByAccountNoAndBank(accountNo, bank);
     }
 }

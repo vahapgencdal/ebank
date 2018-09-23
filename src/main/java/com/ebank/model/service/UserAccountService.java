@@ -10,13 +10,7 @@ import com.ebank.model.entity.UserAccount;
  */
 public interface UserAccountService extends BaseService<UserAccount> {
 
-
-    UserAccount getByAccountNo(String accountNo, String bank);
+    UserAccount getByAccountNoAndBank(String accountNo, String bankCode);
 
     UserAccount getById(long id);
-
-    UserAccount getByIban(String iban);
-
-    UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency);
-
 }

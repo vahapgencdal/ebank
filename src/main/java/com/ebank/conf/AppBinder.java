@@ -1,7 +1,5 @@
 package com.ebank.conf;
 
-import com.ebank.executer.TransactionThreadPoolExecuter;
-import com.ebank.executer.TransactionThreadPoolExecuterImpl;
 import com.ebank.model.repository.BankAccountRepository;
 import com.ebank.model.repository.TransactionRepository;
 import com.ebank.model.repository.UserAccountRepository;
@@ -38,7 +36,6 @@ public class AppBinder extends AbstractModule {
         bind(TransactionService.class).to(TransactionServiceImpl.class);
 
         bind(TransferService.class).to(TransferServiceImpl.class);
-        bind(TransactionThreadPoolExecuter.class).to(TransactionThreadPoolExecuterImpl.class);
 
     }
 }

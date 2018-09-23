@@ -7,5 +7,5 @@ package com.ebank.util;
  * @description TODO: Class Description
  */
 public enum CurrencyEnum {
-    TL, EURO, USD
+    TL, EUR, USD
 }

@@ -10,9 +10,7 @@ import com.ebank.model.entity.BankAccount;
  */
 public interface BankAccountRepository extends BaseRepository<BankAccount> {
 
-    BankAccount getByIban(String iban);
+    BankAccount getByAccountNoAndBank(String accountNo, String bank);
 
-    BankAccount getByAccountNo(String accountNo, String bank);
-
-    BankAccount getByCurrencyAndBank(String currency, String bank);
+    BankAccount getByBankCode(String bank);
 }

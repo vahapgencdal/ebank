@@ -5,21 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.math.BigDecimal;
 
 /**
  * @author Vahap Gencdal
  * @email avahap19@gmail.com
- * @date 18.09.2018
+ * @date 23.09.2018
  * @description TODO: Class Description
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class AccountToIbanRequest {
-    private String senderAccountNo;
-    private String senderBic;
-
-    private String receiverIban;
-    private double amount;
+public class Amount {
+    private BigDecimal amount;
+    private String currency;
 }

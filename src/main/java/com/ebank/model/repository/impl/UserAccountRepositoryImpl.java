@@ -41,8 +41,7 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
     @Override
     public UserAccount update(UserAccount account) {
         UserAccount byId = this.getById(account.getId());
-        byId.setTotalAmount(account.getTotalAmount());
-        byId.setBlockedAmount(account.getBlockedAmount());
+        byId.setAmounts(account.getAmounts());
         byId.setName(account.getName());
 
         return byId;
@@ -70,28 +69,9 @@ public class UserAccountRepositoryImpl extends BaseRepositoryImpl<UserAccount> i
         return ordering.max(this.userAccounts).getId();
     }
 
-    @Override
-    public UserAccount getByAccountType(String accountType) {
-        return this.userAccounts.parallelStream().filter(account -> account.getType().equals(accountType)).findAny().orElse(null);
-    }
 
     @Override
-    public UserAccount getByIban(String iban) {
-        return this.userAccounts.parallelStream().filter(account -> account.getIban().equals(iban)).findAny().orElse(null);
-    }
-
-    @Override
-    public UserAccount getByAccountNo(String accountNo, String bank) {
+    public UserAccount getByAccountNoAndBank(String accountNo, String bank) {
         return this.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank)).findAny().orElse(null);
     }
-
-    @Override
-    public UserAccount getByAccountNoAndBankAndCurrency(String accountNo, String bank, String currency) {
-        UserAccount userAccount = this.userAccounts.parallelStream().filter(account -> account.getAccountNo().equals(accountNo) && account.getBank().equals(bank) && account.getCurrency().equals(currency)).findAny().orElse(null);
-
-        if (userAccount == null)
-            return this.userAccounts.parallelStream().filter(account -> account.isDefaultAccount()).findAny().orElse(null);
-        else return userAccount;
-    }
-
 }

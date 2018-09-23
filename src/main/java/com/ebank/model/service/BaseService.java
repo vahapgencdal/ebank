@@ -18,6 +18,4 @@ public interface BaseService<T> {
     T update(T t);
 
     void remove(long id);
-
-    int getSize();
 }
